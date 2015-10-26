@@ -61,7 +61,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		FileConfiguration cfg = getConfig();
 		cfg.options().copyDefaults(true).header("FlickeringPumpkinsLite configuration file" + NEWLINE +
 			"GNU GPL v3 modified license - Janmm14 - Copyright since 2015" + NEWLINE +
-			"See LICENSE file in the jar (use our favorite extractor) or go to my github." +
+			"See LICENSE file in the jar (use your favorite extractor) or go to my github." +
 			NEWLINE +
 			NEWLINE +
 			"interval: how often the pumpkin should update (measured in ticks, 20 = 1 second)" + NEWLINE +
