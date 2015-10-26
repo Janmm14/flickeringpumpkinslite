@@ -16,17 +16,23 @@ public class PumpkinPlacementListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPumpinPlace(BlockPlaceEvent event) {
-		if (event.isCancelled() || !event.canBuild()) {
+		if (event.isCancelled() || !event.canBuild()) { //TODO find out more about canBuild() method and behaviour
 			return;
 		}
-		if (plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId())) {
+		if (plugin.getPumpkinItem().isSimilar(event.getItemInHand())) {
+			setAsPumpkinLocation(event.getBlockPlaced());
+		} else if (plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId())) {
 			Block block = event.getBlockPlaced();
 			if (block.getType() != Material.PUMPKIN && block.getType() != Material.JACK_O_LANTERN) {
 				return;
 			}
-			Location blockPos = block.getLocation();
-			plugin.getPumpkinConfiguration().getPumpkinLocations().add(blockPos);
-			plugin.getUpdater().notifyUpdate();
+			setAsPumpkinLocation(block);
 		}
+	}
+
+	private void setAsPumpkinLocation(Block block) {
+		Location blockPos = block.getLocation();
+		plugin.getPumpkinConfiguration().getPumpkinLocations().add(blockPos);
+		plugin.getUpdater().notifyUpdate();
 	}
 }
