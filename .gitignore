@@ -1,0 +1,10 @@
+.idea/
+target/
+*.iml
+*output.txt
+.classpath
+.project
+bin/
+*dependency-reduced-pom.xml
+desktop.ini
+*.orig

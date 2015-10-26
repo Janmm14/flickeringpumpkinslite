@@ -1,0 +1,15 @@
+name: ${project.name}
+version: ${project.version}-${env.BUILD_NUMBER}
+description: ${project.description}
+author: ${bukkit.pluginyml.author}
+main: ${bukkit.pluginyml.main}
+
+depend: [ProtocolLib]
+softdepend: [FlickeringPumkins] #For better and easier checking whether the plugin is there
+
+commands:
+  flickeringpumpkinslite:
+    description: Handle Flickering pumpkins
+    aliases: [fpl, flickerpumpink, flickerpumpinks, flickeringpumpink, flickeringpumpinks, pumpkins, fp]
+    permission: flickeringpumpkinslite.command.use
+    permission-message: "§6${project.name} §7- §6v${project.version}-${env.BUILD_NUMBER} §7- §6by ${bukkit.pluginyml.author}"
