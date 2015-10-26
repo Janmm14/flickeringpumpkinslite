@@ -108,7 +108,6 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		try {
 			Field fileField = JavaPlugin.class.getDeclaredField("file");
 
-
 			boolean accessible = fileField.isAccessible();
 			fileField.setAccessible(true);
 
