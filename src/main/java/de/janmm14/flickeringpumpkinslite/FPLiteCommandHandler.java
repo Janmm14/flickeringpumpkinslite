@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class FPLiteCommandHandler implements TabExecutor {
+public class FPLiteCommandHandler implements TabExecutor { //TODO permissions
 
 	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import");
 	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability");
@@ -64,7 +64,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 				plugin.reload(true);
 				break;
 			}
-			case "options": {
+			case "options": { //TODO add spawn-bats and toggle-default options
 				if (args.length == 1) {
 					sendSetHelp(sender, alias);
 					break;

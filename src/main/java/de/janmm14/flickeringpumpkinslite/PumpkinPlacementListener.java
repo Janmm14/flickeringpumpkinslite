@@ -21,7 +21,8 @@ public class PumpkinPlacementListener implements Listener {
 		}
 		if (plugin.getPumpkinItem().isSimilar(event.getItemInHand())) {
 			setAsPumpkinLocation(event.getBlockPlaced());
-		} else if (plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId())) {
+		} else if (event.getPlayer().hasPermission("flickeringpumpkinslite.allowtoggle") &&
+			xor(plugin.isToggleDefault(), plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId()))) {
 			Block block = event.getBlockPlaced();
 			if (block.getType() != Material.PUMPKIN && block.getType() != Material.JACK_O_LANTERN) {
 				return;
@@ -34,5 +35,14 @@ public class PumpkinPlacementListener implements Listener {
 		Location blockPos = block.getLocation();
 		plugin.getPumpkinConfiguration().getPumpkinLocations().add(blockPos);
 		plugin.getUpdater().notifyUpdate();
+	}
+
+	/**
+	 * exclusive or, returns like
+	 * <p>
+	 * {@code first && !second || !first && second}
+	 */
+	private static boolean xor(boolean first, boolean second) {
+		return first ^ second;
 	}
 }

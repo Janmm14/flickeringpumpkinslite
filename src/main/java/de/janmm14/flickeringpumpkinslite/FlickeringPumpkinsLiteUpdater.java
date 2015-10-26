@@ -132,7 +132,9 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	}
 
 	private void spawnBat(Location loc) {
-		new BatTask(plugin, loc).runTaskTimer(plugin, 0, 10);
+		if (plugin.isBats()) {
+			new BatTask(plugin, loc).runTaskTimer(plugin, 0, 10);
+		}
 	}
 
 	private static List<Player> getNearbyPlayers(Location loc, int distanceSquared) {

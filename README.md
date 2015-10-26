@@ -21,4 +21,4 @@ Features:
 
     * Toggle any placed pumpkins get /fpl toggle
 
-    * Set configuration values ingame
+* Set configuration values ingame

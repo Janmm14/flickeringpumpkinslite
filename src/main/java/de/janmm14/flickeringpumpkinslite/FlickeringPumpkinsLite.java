@@ -29,8 +29,12 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 
 	private static final int INTERVAL_DEFAULT = 15;
 	private static final int PROBABILITY_DEFAULT = 95;
+	private static final boolean BATS_DEFAULT = true;
+	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final String INTERVAL_PATH = "interval";
 	private static final String PROBABILITY_PATH = "probability";
+	private static final String BATS_PATH = "spawn-bats";
+	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
 
 	@Getter
 	private final File flickeringPumpkinsJsonFile = new File(new File(getDataFolder().getParentFile(), "FlickeringPumkins"), "pumpkins.json");
@@ -49,6 +53,12 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Getter
 	@Setter
 	private int probability = PROBABILITY_DEFAULT;
+	@Getter
+	@Setter
+	private boolean bats = BATS_DEFAULT;
+	@Getter
+	@Setter
+	private boolean toggleDefault = BATS_DEFAULT;
 
 	@Getter
 	private ItemStack pumpkinItem;
@@ -64,10 +74,14 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			"See LICENSE file in the jar (use your favorite extractor) or go to my github." +
 			NEWLINE +
 			NEWLINE +
-			"interval: how often the pumpkin should update (measured in ticks, 20 = 1 second)" + NEWLINE +
-			"probability: Probability for a pumpkin to change its state at updating (0-100%)");
+			"interval: how often the pumpkin should be checked for update (measured in ticks, 20 = 1 second)" + NEWLINE +
+			"probability: Probability for a pumpkin to change its state at updating (0-100%)" + NEWLINE +
+			"spawn-bats: Whether to spawn bats with turning a pumpkin on" + NEWLINE +
+			"toggle-default: The default state of the toggle pumpkins placed turn into flickering pumpkins");
 		cfg.addDefault(INTERVAL_PATH, INTERVAL_DEFAULT);
 		cfg.addDefault(PROBABILITY_PATH, PROBABILITY_DEFAULT);
+		cfg.addDefault(BATS_PATH, BATS_DEFAULT);
+		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
 		saveConfig();
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
@@ -77,8 +91,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private void setPumpkinItem() {
 		pumpkinItem = new ItemStack(Material.JACK_O_LANTERN);
 		ItemMeta meta = pumpkinItem.getItemMeta();
-		meta.setLore(Arrays.asList("§c§4§5§f§7Placing this pumpkin will make it flicker.", "§c§4§5§f§7Proudly presented by FlickeringPumpkinsLite"));
 		meta.setDisplayName("§c§4§5§f§6Flickering pumpkin");
+		meta.setLore(Arrays.asList("§c§4§5§f§7Placing this pumpkin will make it flicker.", "§c§4§5§f§7Proudly presented by FlickeringPumpkinsLite"));
 		pumpkinItem.setItemMeta(meta);
 	}
 
