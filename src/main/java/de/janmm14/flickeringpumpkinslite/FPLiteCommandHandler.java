@@ -53,7 +53,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 				Player plr = (Player) sender;
 				UUID uuid = plr.getUniqueId();
 				if (list.remove(uuid)) {
-					sender.sendMessage("§6You are no longer building flickering pumpkins by any pumpkin.");
+					sender.sendMessage("§6You are no longer building flickering pumpkins by placing any pumpkin.");
 				} else {
 					list.add(uuid);
 					sender.sendMessage("§6You are now building flickering pumpkins by placing any pumpkin.");
