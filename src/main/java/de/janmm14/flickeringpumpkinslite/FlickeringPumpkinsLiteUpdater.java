@@ -14,10 +14,10 @@ import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
@@ -26,7 +26,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 	private final FlickeringPumpkinsLite plugin;
 	private final Random random = new Random();
-	private final Map<Location, Boolean> states = new ConcurrentHashMap<>();
+	private final Map<Location, Boolean> states = new HashMap<>();
 
 	public FlickeringPumpkinsLiteUpdater(FlickeringPumpkinsLite plugin) {
 		super("FlickeringPumpkinsLiteUpdater");
@@ -36,8 +36,10 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	}
 
 	public void notifyUpdate() {
-		for (Location loc : plugin.getPumpkinConfiguration().getPumpkinLocations()) {
-			states.putIfAbsent(loc, false);
+		synchronized (states) {
+			for (Location loc : plugin.getPumpkinConfiguration().getPumpkinLocations()) {
+				states.putIfAbsent(loc, false);
+			}
 		}
 	}
 
@@ -63,62 +65,64 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 				first = false;
 			} else {
 				//noinspection UnnecessaryParentheses
-				trySleep((long) (((double) interval) / 20D * 1000D));
+				trySleep((long) (((double) interval) / 20D * 1000D)); //interval ticks -> milliseconds
 			}
 
 			if (plugin.getServer().getOnlinePlayers().isEmpty()) {
 				continue;
 			}
-			for (Map.Entry<Location, Boolean> entry : states.entrySet()) {
-				Location loc = entry.getKey();
-				List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
+			synchronized (states) {
+				for (Map.Entry<Location, Boolean> entry : states.entrySet()) {
+					Location loc = entry.getKey();
+					List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
 
-				if (nearbyPlayers.isEmpty()) {
-					continue;
-				}
-				if (random.nextInt(100) > probability) {
-					continue;
-				}
-
-				WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
-				packet.setLocation(new BlockPosition(loc.toVector()));
-
-				Boolean on = entry.getValue();
-				if (on == null) {
-					on = false;
-				}
-				entry.setValue(!on);
-
-				WrappedBlockData data = WrappedBlockData.createData(!on ? Material.JACK_O_LANTERN : Material.PUMPKIN);
-				packet.setBlockData(data);
-
-
-				if (on) {
-					for (int i = 10; i > 0; i--) {
-						final double x = .5 + random.nextDouble() - random.nextDouble();
-						final double y = .5 + random.nextDouble() - random.nextDouble();
-						final double z = .5 + random.nextDouble() - random.nextDouble();
-						Location pLoc = loc.clone().add(x, y, z);
-						sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
-						sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
+					if (nearbyPlayers.isEmpty()) {
+						continue;
 					}
-					if (random.nextInt(3) == 1) { //chnace of 33.3% to spawn a bat
-						spawnBat(loc);
+					if (random.nextInt(100) >= probability) {
+						continue;
 					}
-				} else {
-					for (int i = 10; i > 0; i--) {
-						final double x = .5 + random.nextDouble() - random.nextDouble();
-						final double y = .5 + random.nextDouble() - random.nextDouble();
-						final double z = .5 + random.nextDouble() - random.nextDouble();
-						Location pLoc = loc.clone().add(x, y, z);
-						sendParticle(pLoc, Color.BLACK, nearbyPlayers);
-						sendParticle(pLoc, Color.RED, nearbyPlayers);
+
+					WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
+					packet.setLocation(new BlockPosition(loc.toVector()));
+
+					Boolean on = entry.getValue();
+					if (on == null) {
+						on = false;
 					}
-				}
+					entry.setValue(!on);
 
-				nearbyPlayers.forEach(packet::sendPacket);
+					WrappedBlockData data = WrappedBlockData.createData(!on ? Material.JACK_O_LANTERN : Material.PUMPKIN);
+					packet.setBlockData(data);
 
-			} //end for
+
+					if (on) {
+						for (int i = 10; i > 0; i--) {
+							final double x = .5 + random.nextDouble() - random.nextDouble();
+							final double y = .5 + random.nextDouble() - random.nextDouble();
+							final double z = .5 + random.nextDouble() - random.nextDouble();
+							Location pLoc = loc.clone().add(x, y, z);
+							sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
+							sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
+						}
+						if (random.nextInt(3) == 1) { //chnace of 33.3% to spawn a bat
+							spawnBat(loc);
+						}
+					} else {
+						for (int i = 10; i > 0; i--) {
+							final double x = .5 + random.nextDouble() - random.nextDouble();
+							final double y = .5 + random.nextDouble() - random.nextDouble();
+							final double z = .5 + random.nextDouble() - random.nextDouble();
+							Location pLoc = loc.clone().add(x, y, z);
+							sendParticle(pLoc, Color.BLACK, nearbyPlayers);
+							sendParticle(pLoc, Color.RED, nearbyPlayers);
+						}
+					}
+
+					nearbyPlayers.forEach(packet::sendPacket);
+
+				} //end for
+			} //end synchronized
 			//sleeping / delay at start of while for better usage of continue;
 		} //end while
 	}
