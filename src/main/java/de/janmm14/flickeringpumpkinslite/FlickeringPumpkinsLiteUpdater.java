@@ -113,6 +113,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 			} //end synchronized
 			//sleeping / delay at start of while for better usage of continue;
 		} //end while
+		plugin.getLogger().info("The pumpkin updater shut down successfully.");
 	}
 
 	private Location middleAndRandomizeBlockLocation(Location loc) {
