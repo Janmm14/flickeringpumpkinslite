@@ -51,12 +51,8 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 			//check values
 			int interval = plugin.getInterval();
-			if (interval <= 0) {
-				trySleep(TimeUnit.SECONDS.toMillis(30));
-				continue;
-			}
 			int probability = plugin.getProbability();
-			if (probability <= 0) {
+			if (interval <= 0 || probability <= 0) {
 				trySleep(TimeUnit.SECONDS.toMillis(30));
 				continue;
 			}
@@ -95,13 +91,11 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 					WrappedBlockData data = WrappedBlockData.createData(!on ? Material.JACK_O_LANTERN : Material.PUMPKIN);
 					packet.setBlockData(data);
 
+					nearbyPlayers.forEach(packet::sendPacket);
 
 					if (on) {
 						for (int i = 10; i > 0; i--) {
-							final double x = .5 + random.nextDouble() - random.nextDouble();
-							final double y = .5 + random.nextDouble() - random.nextDouble();
-							final double z = .5 + random.nextDouble() - random.nextDouble();
-							Location pLoc = loc.clone().add(x, y, z);
+							Location pLoc = middleAndRandomizeBlockLocation(loc);
 							sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
 							sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
 						}
@@ -110,21 +104,22 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 						}
 					} else {
 						for (int i = 10; i > 0; i--) {
-							final double x = .5 + random.nextDouble() - random.nextDouble();
-							final double y = .5 + random.nextDouble() - random.nextDouble();
-							final double z = .5 + random.nextDouble() - random.nextDouble();
-							Location pLoc = loc.clone().add(x, y, z);
+							Location pLoc = middleAndRandomizeBlockLocation(loc);
 							sendParticle(pLoc, Color.BLACK, nearbyPlayers);
 							sendParticle(pLoc, Color.RED, nearbyPlayers);
 						}
 					}
-
-					nearbyPlayers.forEach(packet::sendPacket);
-
 				} //end for
 			} //end synchronized
 			//sleeping / delay at start of while for better usage of continue;
 		} //end while
+	}
+
+	private Location middleAndRandomizeBlockLocation(Location loc) {
+		final double x = .5 + random.nextDouble() - random.nextDouble();
+		final double y = .5 + random.nextDouble() - random.nextDouble();
+		final double z = .5 + random.nextDouble() - random.nextDouble();
+		return loc.clone().add(x, y, z);
 	}
 
 	public static void sendParticle(Location loc, Color color) {
