@@ -1,9 +1,9 @@
 FlickeringPumpkinsLite
 ======================
 
-Lightweight version of the propietary (but free) spigot resource [FlickeringPumpkins](https://www.spigotmc.org/resources/halloween-flickering-jack-olanterns.13150/)
+Lightweight version of the propietary (but free) spigot resource [FlickeringPumpkins](https://www.spigotmc.org/resources/halloween-flickering-jack-olanterns.13150/).
 
-You can download this plugin from *spigot resource coming soon* or development builds from my [Jenkins](https://ci.janmm14.de) *also coming soon*
+You can download this plugin from *spigot resource coming soon* or development builds from my [Jenkins](https://ci.janmm14.de/job/public~FlickeringPumpkinsLite/).
 
 
 Features:
