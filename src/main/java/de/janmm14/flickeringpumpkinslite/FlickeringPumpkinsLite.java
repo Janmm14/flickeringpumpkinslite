@@ -45,7 +45,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Getter
 	private PumpkinConfiguration pumpkinConfiguration = new YamlPumpkinConfiguration(new File(getDataFolder(), "pumpkins.yml"));
 	@Getter
-	private FlickeringPumpkinsLiteUpdater updater = new FlickeringPumpkinsLiteUpdater(this);
+	private FlickeringPumpkinsLiteUpdater updater;
 
 	@Getter
 	@Setter
@@ -67,6 +67,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	public void onEnable() {
 		setTabExecutor("flickeringpumpkinslite", new FPLiteCommandHandler(this));
 		getServer().getPluginManager().registerEvents(new PumpkinPlacementListener(this), this);
+		updater = new FlickeringPumpkinsLiteUpdater(this);
 
 		FileConfiguration cfg = getConfig();
 		cfg.options().copyDefaults(true).header("FlickeringPumpkinsLite configuration file" + NEWLINE +
@@ -86,6 +87,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
 		setPumpkinItem();
+		updater.start();
 	}
 
 	private void setPumpkinItem() {
