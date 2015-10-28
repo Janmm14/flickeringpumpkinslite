@@ -1,7 +1,6 @@
 package de.janmm14.flickeringpumpkinslite.pumpkinconfig;
 
 import lombok.Getter;
-import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,7 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 	private static final String PUMPKIN_LOCATIONS_PATH = "pumpkinLocations";
 	private YamlConfiguration cfg;
 	@Getter
-	@NonNull
+	@NotNull
 	private final List<Location> pumpkinLocations = Collections.synchronizedList(new ArrayList<>());
 
 	public YamlPumpkinConfiguration(@NotNull File file) {
@@ -45,7 +44,10 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 	public void reload() {
 		cfg = YamlConfiguration.loadConfiguration(getFile());
 		pumpkinLocations.clear();
-		pumpkinLocations.addAll((Collection<? extends Location>) cfg.get(PUMPKIN_LOCATIONS_PATH));
+		Object data = cfg.get(PUMPKIN_LOCATIONS_PATH);
+		if (data != null) {
+			pumpkinLocations.addAll((Collection<? extends Location>) data);
+		}
 	}
 
 	public void copyFrom(PumpkinConfiguration pumpkinConfiguration) {

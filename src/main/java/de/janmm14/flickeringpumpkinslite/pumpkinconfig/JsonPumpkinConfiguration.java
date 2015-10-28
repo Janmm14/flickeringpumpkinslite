@@ -5,8 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.janmm14.flickeringpumpkinslite.LocationJsonAdapter;
 import lombok.Getter;
-import lombok.NonNull;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 	private static final Joiner EMPTY_JOINER = Joiner.on("");
 
 	@Getter
-	@NonNull
+	@NotNull
 	private final List<Location> pumpkinLocations = new LocationList();
 
 	public JsonPumpkinConfiguration(File file) {
