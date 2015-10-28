@@ -141,6 +141,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		specialPumpkinCreators.clear();
+		pumpkinConfiguration.save();
+		//TODO shut down all stuff
 	}
 
 	public void saveConfigChanges() {
