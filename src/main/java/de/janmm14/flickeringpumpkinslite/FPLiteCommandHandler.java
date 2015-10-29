@@ -229,17 +229,17 @@ public class FPLiteCommandHandler implements TabExecutor {
 	}
 
 	private void sendHelp(CommandSender sender, String alias) {
-		sender.sendMessage("§c/" + alias + " get&7 - &6Get a special pumpkin which turns into a flickering one (regardless of the toggle)");
-		sender.sendMessage("§c/" + alias + " toggle&7 - &6Toggle any pumpkin turns into a flickering one on placement for you");
-		sender.sendMessage("§c/" + alias + " reload&7 - &6Reload the configuration from the file");
-		sender.sendMessage("§c/" + alias + " options <option> [value]&7 - &6See or write configuration options");
-		sender.sendMessage("§c/" + alias + " import&7 - &6Import data from &eFlickeringPumpkins &6plugin");
+		sender.sendMessage("§c/" + alias + " get§7 - §6Get a special pumpkin which turns into a flickering one (regardless of the toggle)");
+		sender.sendMessage("§c/" + alias + " toggle§7 - §6Toggle any pumpkin turns into a flickering one on placement for you");
+		sender.sendMessage("§c/" + alias + " reload§7 - §6Reload the configuration from the file");
+		sender.sendMessage("§c/" + alias + " options <option> [value]§7 - §6See or write configuration options");
+		sender.sendMessage("§c/" + alias + " import§7 - §6Import data from §eFlickeringPumpkins §6plugin");
 	}
 
 	private void sendSetHelp(CommandSender sender, String alias) {
 		sender.sendMessage("§6You can modify these options: " + COMMA_JOINER.join(OPTIONS_OPTIONS));
-		sender.sendMessage("§6To see the options value, use this command: §c/" + alias + " options <option>");
-		sender.sendMessage("§6To modify the options value, use this command: §c/" + alias + " options <option> <newvalue>");
+		sender.sendMessage("§6To see the options value, use this command:\n§c/" + alias + " options <option>");
+		sender.sendMessage("§6To modify the options value, use this command:\n§c/" + alias + " options <option> <newvalue>");
 	}
 
 	@Override
