@@ -88,7 +88,7 @@ public class BatTask extends BukkitRunnable {
 
 	private void playScarySound(Location loc, List<Player> players) { //TODO make sound playing configurable
 		for (Player plr : players) {
-			plr.playSound(loc, Sound.AMBIENCE_CAVE, 1 + random.nextFloat(), 0); //floats: volume - pitch
+			plr.playSound(loc, Sound.ENDERDRAGON_WINGS, 1 + random.nextFloat() * .5F, random.nextFloat() * .5F); //floats: volume - pitch
 		}
 	}
 
