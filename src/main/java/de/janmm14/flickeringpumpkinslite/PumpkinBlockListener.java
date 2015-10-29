@@ -7,10 +7,11 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 @RequiredArgsConstructor
-public class PumpkinPlacementListener implements Listener {
+public class PumpkinBlockListener implements Listener {
 
 	private final FlickeringPumpkinsLite plugin;
 
@@ -29,6 +30,19 @@ public class PumpkinPlacementListener implements Listener {
 			}
 			setAsPumpkinLocation(block);
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPumpkinBreak(BlockBreakEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		Block block = event.getBlock();
+		Material blockMaterial = block.getType();
+		if (blockMaterial != Material.PUMPKIN && blockMaterial != Material.JACK_O_LANTERN) {
+			return;
+		}
+		plugin.getPumpkinConfiguration().getPumpkinLocations().remove(block.getLocation());
 	}
 
 	private void setAsPumpkinLocation(Block block) {

@@ -27,8 +27,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final String NEWLINE = System.lineSeparator();
 	private static final Pattern NO_NUMBER = Pattern.compile("\\D", Pattern.LITERAL);
 
-	private static final int INTERVAL_DEFAULT = 15;
-	private static final int PROBABILITY_DEFAULT = 95;
+	private static final int INTERVAL_DEFAULT = 5;
+	private static final int PROBABILITY_DEFAULT = 20;
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final String INTERVAL_PATH = "interval";
@@ -66,7 +66,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setTabExecutor("flickeringpumpkinslite", new FPLiteCommandHandler(this));
-		getServer().getPluginManager().registerEvents(new PumpkinPlacementListener(this), this);
+		getServer().getPluginManager().registerEvents(new PumpkinBlockListener(this), this);
 		updater = new FlickeringPumpkinsLiteUpdater(this);
 
 		FileConfiguration cfg = getConfig();
