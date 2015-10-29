@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO support not loaded worlds
 
@@ -18,7 +18,7 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 	private YamlConfiguration cfg;
 	@Getter
 	@NotNull
-	private final List<Location> pumpkinLocations = Collections.synchronizedList(new ArrayList<>());
+	private final Set<Location> pumpkinLocations = Collections.synchronizedSet(new HashSet<>());
 
 	public YamlPumpkinConfiguration(@NotNull File file) {
 		super(file);

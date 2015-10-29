@@ -14,7 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO support not loaded worlds
 
@@ -25,7 +27,7 @@ public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 
 	@Getter
 	@NotNull
-	private final List<Location> pumpkinLocations = new LocationList();
+	private final Set<Location> pumpkinLocations = new HashSet<>();
 
 	public JsonPumpkinConfiguration(File file) {
 		super(file);
@@ -33,6 +35,9 @@ public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 
 	@Override
 	public void save() {
+		if (true) { //saving json should not be neccessary
+			return;
+		}
 		String json = GSON.toJson(pumpkinLocations);
 		try {
 			Files.write(getFile().toPath(), Collections.singletonList(json), StandardCharsets.UTF_8,

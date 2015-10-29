@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
@@ -41,7 +42,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	public void notifyUpdate() {
 		synchronized (states) {
 			//TODO profiling over removeAll and addAll
-			List<Location> pumpkinLocations = plugin.getPumpkinConfiguration().getPumpkinLocations();
+			Set<Location> pumpkinLocations = plugin.getPumpkinConfiguration().getPumpkinLocations();
 			//add missing ones
 			for (Location loc : pumpkinLocations) {
 				states.putIfAbsent(loc, new BooleanIntTuple(false, loc.getBlock().getData()));

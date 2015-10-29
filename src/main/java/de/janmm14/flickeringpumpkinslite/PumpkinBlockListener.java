@@ -38,11 +38,9 @@ public class PumpkinBlockListener implements Listener {
 			return;
 		}
 		Block block = event.getBlock();
-		Material blockMaterial = block.getType();
-		if (blockMaterial != Material.PUMPKIN && blockMaterial != Material.JACK_O_LANTERN) {
-			return;
+		if (plugin.getPumpkinConfiguration().getPumpkinLocations().remove(block.getLocation())) {
+			plugin.getUpdater().notifyUpdate();
 		}
-		plugin.getPumpkinConfiguration().getPumpkinLocations().remove(block.getLocation());
 	}
 
 	private void setAsPumpkinLocation(Block block) {

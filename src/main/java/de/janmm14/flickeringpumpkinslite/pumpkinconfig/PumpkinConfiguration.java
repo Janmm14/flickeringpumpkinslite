@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public abstract class PumpkinConfiguration {
@@ -16,7 +16,7 @@ public abstract class PumpkinConfiguration {
 	private final File file;
 
 	@NotNull
-	public abstract List<Location> getPumpkinLocations();
+	public abstract Set<Location> getPumpkinLocations();
 
 	public abstract void save();
 
