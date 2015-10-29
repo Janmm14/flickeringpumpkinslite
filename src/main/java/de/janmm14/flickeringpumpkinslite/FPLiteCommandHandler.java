@@ -119,6 +119,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					case "spawn-bats": {
 						boolean bool = Boolean.parseBoolean(args[2]);
 						plugin.setBats(bool);
+						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e spawn-bats §6is now: §e" + plugin.isBats());
 						return true;
 					}
@@ -126,6 +127,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					case "toggle-default": {
 						boolean bool = Boolean.parseBoolean(args[2]);
 						plugin.setToggleDefault(bool);
+						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e toggle-default §6is now: §e" + plugin.isToggleDefault());
 						return true;
 					}
@@ -147,6 +149,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 							break;
 						}
 						plugin.setInterval(val);
+						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e interval §6is now: §e" + plugin.getInterval());
 						break;
 					}
@@ -155,6 +158,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 							sender.sendMessage("§cProbability too high. Needs to be between §60 §cand §6100§c.");
 						}
 						plugin.setProbability(val);
+						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e probability §6is now: §e" + plugin.getProbability());
 						break;
 					}

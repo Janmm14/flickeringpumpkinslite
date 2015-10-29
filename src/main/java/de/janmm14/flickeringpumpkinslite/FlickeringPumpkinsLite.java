@@ -149,6 +149,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		FileConfiguration cfg = getConfig();
 		cfg.set(INTERVAL_PATH, interval);
 		cfg.set(PROBABILITY_PATH, probability);
+		cfg.set(BATS_PATH, bats);
+		cfg.set(TOGGLE_DEFAULT_PATH, toggleDefault);
 		saveConfig();
 	}
 
