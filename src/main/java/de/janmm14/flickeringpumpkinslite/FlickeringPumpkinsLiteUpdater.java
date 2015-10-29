@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,8 +40,19 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 	public void notifyUpdate() {
 		synchronized (states) {
-			for (Location loc : plugin.getPumpkinConfiguration().getPumpkinLocations()) {
+			//TODO profiling over removeAll and addAll
+			List<Location> pumpkinLocations = plugin.getPumpkinConfiguration().getPumpkinLocations();
+			//add missing ones
+			for (Location loc : pumpkinLocations) {
 				states.putIfAbsent(loc, new BooleanIntTuple(false, loc.getBlock().getData()));
+			}
+			//remove removed ones
+			Iterator<Map.Entry<Location, BooleanIntTuple>> iterator = states.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry<Location, BooleanIntTuple> entry = iterator.next();
+				if (!pumpkinLocations.contains(entry.getKey())) {
+					iterator.remove();
+				}
 			}
 		}
 	}
