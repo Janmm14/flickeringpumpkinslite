@@ -62,10 +62,18 @@ public class FPLiteCommandHandler implements TabExecutor {
 				List<UUID> list = plugin.getSpecialPumpkinCreators();
 				UUID uuid = plr.getUniqueId();
 				if (list.remove(uuid)) {
-					sender.sendMessage("§6You are no longer building flickering pumpkins by placing any pumpkin.");
+					if (plugin.isToggleDefault()) {
+						sender.sendMessage("§6You are now building flickering pumpkins by placing any pumpkin.");
+					} else {
+						sender.sendMessage("§6You are no longer building flickering pumpkins by placing any pumpkin.");
+					}
 				} else {
 					list.add(uuid);
-					sender.sendMessage("§6You are now building flickering pumpkins by placing any pumpkin.");
+					if (plugin.isToggleDefault()) {
+						sender.sendMessage("§6You are no longer building flickering pumpkins by placing any pumpkin.");
+					} else {
+						sender.sendMessage("§6You are now building flickering pumpkins by placing any pumpkin.");
+					}
 				}
 				break;
 			}
