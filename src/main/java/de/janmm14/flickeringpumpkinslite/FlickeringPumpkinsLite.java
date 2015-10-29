@@ -28,11 +28,13 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final Pattern NO_NUMBER = Pattern.compile("\\D", Pattern.LITERAL);
 
 	private static final int INTERVAL_DEFAULT = 5;
-	private static final int PROBABILITY_DEFAULT = 20;
+	private static final int ON_PROBABILITY_DEFAULT = 5;
+	private static final int OFF_PROBABILITY_DEFAULT = 50;
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final String INTERVAL_PATH = "interval";
-	private static final String PROBABILITY_PATH = "probability";
+	private static final String ON_PROBABILITY_PATH = "probability.turnon";
+	private static final String OFF_PROBABILITY_PATH = "probability.turnoff";
 	private static final String BATS_PATH = "spawn-bats";
 	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
 
@@ -52,13 +54,16 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private int interval = INTERVAL_DEFAULT;
 	@Getter
 	@Setter
-	private int probability = PROBABILITY_DEFAULT;
+	private int onProbability = ON_PROBABILITY_DEFAULT;
+	@Getter
+	@Setter
+	private int offProbability = OFF_PROBABILITY_DEFAULT;
 	@Getter
 	@Setter
 	private boolean bats = BATS_DEFAULT;
 	@Getter
 	@Setter
-	private boolean toggleDefault = BATS_DEFAULT;
+	private boolean toggleDefault = TOGGLE_DEFAULT_DEFAULT;
 
 	@Getter
 	private ItemStack pumpkinItem;
@@ -76,11 +81,13 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			NEWLINE +
 			NEWLINE +
 			"interval: how often the pumpkin should be checked for update (measured in ticks, 20 = 1 second)" + NEWLINE +
-			"probability: Probability for a pumpkin to change its state at updating (0-100%)" + NEWLINE +
+			"probability-on: Probability for a pumpkin to turn on at updating (1-100)%" + NEWLINE +
+			"probability-off: Probability for a pumpkin to turn off at updating (1-100)%" + NEWLINE +
 			"spawn-bats: Whether to spawn bats with turning a pumpkin on" + NEWLINE +
 			"toggle-default: The default state of the toggle pumpkins placed turn into flickering pumpkins");
 		cfg.addDefault(INTERVAL_PATH, INTERVAL_DEFAULT);
-		cfg.addDefault(PROBABILITY_PATH, PROBABILITY_DEFAULT);
+		cfg.addDefault(ON_PROBABILITY_PATH, ON_PROBABILITY_DEFAULT);
+		cfg.addDefault(OFF_PROBABILITY_PATH, OFF_PROBABILITY_DEFAULT);
 		cfg.addDefault(BATS_PATH, BATS_DEFAULT);
 		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
 		saveConfig();
@@ -148,7 +155,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	public void saveConfigChanges() {
 		FileConfiguration cfg = getConfig();
 		cfg.set(INTERVAL_PATH, interval);
-		cfg.set(PROBABILITY_PATH, probability);
+		cfg.set(ON_PROBABILITY_PATH, onProbability);
 		cfg.set(BATS_PATH, bats);
 		cfg.set(TOGGLE_DEFAULT_PATH, toggleDefault);
 		saveConfig();
@@ -161,8 +168,9 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		reloadConfig();
 		readInterval();
 		readProbability();
+		readBats();
+		readToggleDefault();
 		updater.notifyUpdate();
-		//TODO read pumpkins
 	}
 
 	@Override
@@ -190,24 +198,32 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	}
 
 	public void readProbability() {
-		int probability = getConfig().getInt(PROBABILITY_PATH, Integer.MIN_VALUE);
+		int probability = getConfig().getInt(ON_PROBABILITY_PATH, Integer.MIN_VALUE);
 		if (probability == Integer.MIN_VALUE) {
-			String probStrOrigin = getConfig().getString(PROBABILITY_PATH);
+			String probStrOrigin = getConfig().getString(ON_PROBABILITY_PATH);
 			String probStr = NO_NUMBER.matcher(probStrOrigin.trim()).replaceAll("");
 			try {
 				probability = Integer.parseInt(probStr);
 			} catch (NumberFormatException ex) {
 				getLogger().severe("Could not read probability value, it was: " + probStrOrigin);
-				getLogger().severe("Setting probability now to " + this.probability);
+				getLogger().severe("Setting probability now to " + this.onProbability);
 				return;
 			}
 		}
 		if (probability <= 0) {
 			getLogger().severe("Probability value may not be zero or below.");
-			getLogger().severe("Setting probability now to " + this.probability);
+			getLogger().severe("Setting probability now to " + this.onProbability);
 			return;
 		}
-		this.probability = probability;
+		this.onProbability = probability;
+	}
+
+	public void readBats() {
+		bats = getConfig().getBoolean(BATS_PATH);
+	}
+
+	public void readToggleDefault() {
+		toggleDefault = getConfig().getBoolean(TOGGLE_DEFAULT_PATH);
 	}
 
 	private <T extends CommandExecutor & TabCompleter> void setTabExecutor(String command, T handler) {

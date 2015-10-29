@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FPLiteCommandHandler implements TabExecutor {
 
 	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import");
-	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability", "spawn-bats", "toggle-default");
+	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default");
 	private static final Joiner COMMA_JOINER = Joiner.on(", ");
 	private static final String PERMISSION_CMD_PREFIX = "flickeringpumpkinslite.command";
 
@@ -93,8 +93,14 @@ public class FPLiteCommandHandler implements TabExecutor {
 							sender.sendMessage("§6Value of the option§e interval §6is: §e" + plugin.getInterval());
 							break;
 						}
-						case "probability": {
-							sender.sendMessage("§6Value of the option§e probability §6is: §e" + plugin.getProbability());
+						case "probabilityon":
+						case "probability-on": {
+							sender.sendMessage("§6Value of the option§e probability-on §6is: §e" + plugin.getOnProbability());
+							break;
+						}
+						case "probabilityoff":
+						case "probability-off": {
+							sender.sendMessage("§6Value of the option§e probability-off §6is: §e" + plugin.getOffProbability());
 							break;
 						}
 						case "spawnbats":
@@ -153,13 +159,24 @@ public class FPLiteCommandHandler implements TabExecutor {
 						sender.sendMessage("§6Value of the option§e interval §6is now: §e" + plugin.getInterval());
 						break;
 					}
-					case "probability": {
+					case "probabilityon":
+					case "probability-on": {
 						if (val > 100) {
 							sender.sendMessage("§cProbability too high. Needs to be between §60 §cand §6100§c.");
 						}
-						plugin.setProbability(val);
+						plugin.setOnProbability(val);
 						plugin.saveConfigChanges();
-						sender.sendMessage("§6Value of the option§e probability §6is now: §e" + plugin.getProbability());
+						sender.sendMessage("§6Value of the option§e probability-on §6is now: §e" + plugin.getOnProbability());
+						break;
+					}
+					case "probabilityoff":
+					case "probability-off": {
+						if (val > 100) {
+							sender.sendMessage("§cProbability too high. Needs to be between §60 §cand §6100§c.");
+						}
+						plugin.setOffProbability(val);
+						plugin.saveConfigChanges();
+						sender.sendMessage("§6Value of the option§e probability-off §6is now: §e" + plugin.getOffProbability());
 						break;
 					}
 					default: {

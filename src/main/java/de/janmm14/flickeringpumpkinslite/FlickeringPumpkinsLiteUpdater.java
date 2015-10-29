@@ -53,9 +53,10 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 			//check values
 			int interval = plugin.getInterval();
-			int probability = plugin.getProbability();
-			if (interval <= 0 || probability <= 0) {
-				trySleep(TimeUnit.SECONDS.toMillis(30));
+			int probabilityOn = plugin.getOnProbability();
+			int probabilityOff = plugin.getOnProbability();
+			if (interval <= 0) {
+				trySleep(TimeUnit.SECONDS.toMillis(10));
 				continue;
 			}
 
@@ -81,16 +82,24 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 						continue;
 					}*/
 
-					if (random.nextInt(100) >= probability) {
-						continue;
+					BooleanIntTuple stateDatavalueTuple = entry.getValue();
+					boolean oldState = stateDatavalueTuple.getBool();
+
+					if (oldState) {
+						//turn off probability
+						if (random.nextInt(100) >= probabilityOff) {
+							continue;
+						}
+					} else {
+						//turn on probability
+						if (random.nextInt(100) >= probabilityOn) {
+							continue;
+						}
 					}
 
 					WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
 					packet.setLocation(new BlockPosition(loc.toVector()));
 
-					BooleanIntTuple stateDatavalueTuple = entry.getValue();
-
-					boolean oldState = stateDatavalueTuple.getBool();
 					boolean newState = !oldState;
 					stateDatavalueTuple.setBool(newState);
 
