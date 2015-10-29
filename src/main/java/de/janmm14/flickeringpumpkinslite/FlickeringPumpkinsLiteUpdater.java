@@ -4,12 +4,12 @@ import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.ParticleEffect;
+import de.janmm14.flickeringpumpkinslite.util.BooleanIntTuple;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -28,7 +28,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 	private final FlickeringPumpkinsLite plugin;
 	private final Random random = new Random();
-	private final Map<Location, Boolean> states = new HashMap<>();
+	private final Map<Location, BooleanIntTuple> states = new HashMap<>();
 
 	public FlickeringPumpkinsLiteUpdater(FlickeringPumpkinsLite plugin) {
 		super("FlickeringPumpkinsLiteUpdater");
@@ -40,7 +40,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	public void notifyUpdate() {
 		synchronized (states) {
 			for (Location loc : plugin.getPumpkinConfiguration().getPumpkinLocations()) {
-				states.putIfAbsent(loc, false);
+				states.putIfAbsent(loc, new BooleanIntTuple(false, loc.getBlock().getData()));
 			}
 		}
 	}
@@ -70,40 +70,31 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 				continue;
 			}
 			synchronized (states) {
-				for (Map.Entry<Location, Boolean> entry : states.entrySet()) {
+				for (Map.Entry<Location, BooleanIntTuple> entry : states.entrySet()) {
 					Location loc = entry.getKey();
-					Block block = loc.getBlock();
-					if (block == null) {
-						continue;
-					}
-					Material blockType = block.getType();
-					if (blockType != Material.PUMPKIN && blockType != Material.JACK_O_LANTERN) {
-						continue;
-					}
 					List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
 
 					if (nearbyPlayers.isEmpty()) {
 						continue;
 					}
-					if (random.nextInt(probability) == 0) {
-						continue;
-					}
-					/*
-					if (random.nextInt(100) >= probability) {
+					/*if (random.nextInt(probability) == 0) {
 						continue;
 					}*/
+
+					if (random.nextInt(100) >= probability) {
+						continue;
+					}
 
 					WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
 					packet.setLocation(new BlockPosition(loc.toVector()));
 
-					Boolean oldState = entry.getValue();
-					if (oldState == null) {
-						oldState = false;
-					}
-					boolean newState = !oldState;
-					entry.setValue(newState);
+					BooleanIntTuple stateDatavalueTuple = entry.getValue();
 
-					WrappedBlockData data = WrappedBlockData.createData(oldState ? Material.PUMPKIN : Material.JACK_O_LANTERN, block.getData());
+					boolean oldState = stateDatavalueTuple.getBool();
+					boolean newState = !oldState;
+					stateDatavalueTuple.setBool(newState);
+
+					WrappedBlockData data = WrappedBlockData.createData(oldState ? Material.PUMPKIN : Material.JACK_O_LANTERN, stateDatavalueTuple.getInteger());
 					packet.setBlockData(data);
 
 					nearbyPlayers.forEach(packet::sendPacket);
