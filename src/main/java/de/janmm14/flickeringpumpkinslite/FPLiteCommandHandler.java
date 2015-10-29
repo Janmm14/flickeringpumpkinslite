@@ -20,6 +20,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 
 	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import");
 	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound");
+	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
 	private static final Joiner COMMA_JOINER = Joiner.on(", ");
 	private static final String PERMISSION_CMD_PREFIX = "flickeringpumpkinslite.command";
 
@@ -263,12 +264,6 @@ public class FPLiteCommandHandler implements TabExecutor {
 				.collect(Collectors.toList());
 		}
 		if (args.length == 1) {
-			if (args[0].equalsIgnoreCase("options")) {
-				if (!sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
-					return Collections.emptyList();
-				}
-				return OPTIONS_OPTIONS;
-			}
 			String args0 = args[0].toLowerCase();
 			return SUBCOMMAND_LIST.stream()
 				.filter(subCmd -> subCmd.startsWith(args0))
@@ -281,6 +276,16 @@ public class FPLiteCommandHandler implements TabExecutor {
 				return OPTIONS_OPTIONS.stream()
 					.filter(subCmd -> subCmd.startsWith(args1))
 					.collect(Collectors.toList());
+			}
+		}
+		if (args.length == 3) {
+			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
+				if (args[1].equalsIgnoreCase("spawn-bats") || args[1].equalsIgnoreCase("toggle-default") || args[1].equalsIgnoreCase("play-sound")) {
+					String args2 = args[2].toLowerCase();
+					return TRUE_AND_FALSE.stream()
+						.filter(subCmd -> subCmd.startsWith(args2))
+						.collect(Collectors.toList());
+				}
 			}
 		}
 		return Collections.emptyList();
