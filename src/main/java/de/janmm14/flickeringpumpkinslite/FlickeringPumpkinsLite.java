@@ -33,8 +33,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final String INTERVAL_PATH = "interval";
-	private static final String ON_PROBABILITY_PATH = "probability.turnon";
-	private static final String OFF_PROBABILITY_PATH = "probability.turnoff";
+	private static final String ON_PROBABILITY_PATH = "probability-on";
+	private static final String OFF_PROBABILITY_PATH = "probability-off";
 	private static final String BATS_PATH = "spawn-bats";
 	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
 
@@ -198,24 +198,56 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	}
 
 	public void readProbability() {
+		readProbabilityOn();
+		readProbabilityOff();
+	}
+
+	private void readProbabilityOn() {
 		int probability = getConfig().getInt(ON_PROBABILITY_PATH, Integer.MIN_VALUE);
 		if (probability == Integer.MIN_VALUE) {
 			String probStrOrigin = getConfig().getString(ON_PROBABILITY_PATH);
+			if (probStrOrigin == null || probStrOrigin.isEmpty()) {
+				return;
+			}
 			String probStr = NO_NUMBER.matcher(probStrOrigin.trim()).replaceAll("");
 			try {
 				probability = Integer.parseInt(probStr);
 			} catch (NumberFormatException ex) {
-				getLogger().severe("Could not read probability value, it was: " + probStrOrigin);
-				getLogger().severe("Setting probability now to " + this.onProbability);
+				getLogger().severe("Could not read probability-on value, it was: " + probStrOrigin);
+				getLogger().severe("Setting probability-on now to " + this.onProbability);
 				return;
 			}
 		}
 		if (probability <= 0) {
-			getLogger().severe("Probability value may not be zero or below.");
-			getLogger().severe("Setting probability now to " + this.onProbability);
+			getLogger().severe("Probability-on value may not be zero or below.");
+			getLogger().severe("Setting probability-on now to " + this.onProbability);
 			return;
 		}
 		this.onProbability = probability;
+	}
+
+	private void readProbabilityOff() {
+		int probability = getConfig().getInt(OFF_PROBABILITY_PATH, Integer.MIN_VALUE);
+		if (probability == Integer.MIN_VALUE) {
+			String probStrOrigin = getConfig().getString(OFF_PROBABILITY_PATH);
+			if (probStrOrigin == null || probStrOrigin.isEmpty()) {
+				return;
+			}
+			String probStr = NO_NUMBER.matcher(probStrOrigin.trim()).replaceAll("");
+			try {
+				probability = Integer.parseInt(probStr);
+			} catch (NumberFormatException ex) {
+				getLogger().severe("Could not read probability-on value, it was: " + probStrOrigin);
+				getLogger().severe("Setting probability-on now to " + this.offProbability);
+				return;
+			}
+		}
+		if (probability <= 0) {
+			getLogger().severe("Probability-on value may not be zero or below.");
+			getLogger().severe("Setting probability-on now to " + this.offProbability);
+			return;
+		}
+		this.offProbability = probability;
 	}
 
 	public void readBats() {
