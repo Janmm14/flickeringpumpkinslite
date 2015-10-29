@@ -9,6 +9,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
 
 	private static final int PUMPKIN_DISTANCE_SQUARDED = 100 * 100;
+	private static final int PARTICLE_DISTANCE_SQUARED = 40 * 40;
 
 	private final FlickeringPumpkinsLite plugin;
 	private final Random random = new Random();
@@ -70,36 +72,49 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 			synchronized (states) {
 				for (Map.Entry<Location, Boolean> entry : states.entrySet()) {
 					Location loc = entry.getKey();
+					Block block = loc.getBlock();
+					if (block == null) {
+						continue;
+					}
+					Material blockType = block.getType();
+					if (blockType != Material.PUMPKIN && blockType != Material.JACK_O_LANTERN) {
+						continue;
+					}
 					List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
 
 					if (nearbyPlayers.isEmpty()) {
 						continue;
 					}
-					if (random.nextInt(100) >= probability) {
+					if (random.nextInt(probability) == 0) {
 						continue;
 					}
+					/*
+					if (random.nextInt(100) >= probability) {
+						continue;
+					}*/
 
 					WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
 					packet.setLocation(new BlockPosition(loc.toVector()));
 
-					Boolean on = entry.getValue();
-					if (on == null) {
-						on = false;
+					Boolean oldState = entry.getValue();
+					if (oldState == null) {
+						oldState = false;
 					}
-					entry.setValue(!on);
+					boolean newState = !oldState;
+					entry.setValue(newState);
 
-					WrappedBlockData data = WrappedBlockData.createData(!on ? Material.JACK_O_LANTERN : Material.PUMPKIN);
+					WrappedBlockData data = WrappedBlockData.createData(oldState ? Material.PUMPKIN : Material.JACK_O_LANTERN, block.getData());
 					packet.setBlockData(data);
 
 					nearbyPlayers.forEach(packet::sendPacket);
 
-					if (on) {
+					if (newState) {
 						for (int i = 10; i > 0; i--) {
 							Location pLoc = middleAndRandomizeBlockLocation(loc);
 							sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
 							sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
 						}
-						if (random.nextInt(3) == 1) { //chnace of 33.3% to spawn a bat
+						if (random.nextInt(3) == 1) { //chance of 33.3% to spawn a bat
 							spawnBat(loc);
 						}
 					} else {
@@ -124,11 +139,13 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	}
 
 	public static void sendParticle(Location loc, Color color) {
-		ParticleEffect.REDSTONE.display(new ParticleEffect.OrdinaryColor(color.getRed(), color.getGreen(), color.getBlue()), loc, getNearbyPlayers(loc, 40 * 40));
+		sendParticle(loc, color, getNearbyPlayers(loc, PARTICLE_DISTANCE_SQUARED));
 	}
 
 	public static void sendParticle(Location loc, Color color, List<Player> sendTo) {
-		ParticleEffect.REDSTONE.display(new ParticleEffect.OrdinaryColor(color.getRed(), color.getGreen(), color.getBlue()), loc, sendTo);
+		if (!sendTo.isEmpty()) {
+			ParticleEffect.REDSTONE.display(new ParticleEffect.OrdinaryColor(color.getRed(), color.getGreen(), color.getBlue()), loc, sendTo);
+		}
 	}
 
 	private void spawnBat(Location loc) {

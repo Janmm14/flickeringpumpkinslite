@@ -3,9 +3,9 @@ package de.janmm14.flickeringpumpkinslite.pumpkinconfig;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.janmm14.flickeringpumpkinslite.LocationJsonAdapter;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -19,9 +19,9 @@ import java.util.List;
 public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO support not loaded worlds
 
 	private static final transient Gson GSON = new GsonBuilder()
-		.registerTypeAdapter(Location.class, new LocationJsonAdapter())
+		.registerTypeAdapter(World.class, new WorldJsonAdapter())
 		.create();
-	private static final Joiner EMPTY_JOINER = Joiner.on("");
+	private static final Joiner EMPTY_JOINER = Joiner.on("\n");
 
 	@Getter
 	@NotNull
@@ -47,6 +47,7 @@ public class JsonPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 		try {
 			List<String> json = Files.readAllLines(getFile().toPath(), StandardCharsets.UTF_8);
 			String jsonStr = EMPTY_JOINER.join(json);
+			System.out.println(jsonStr);
 			LocationList locations = GSON.fromJson(jsonStr, LocationList.class);
 			pumpkinLocations.clear();
 			pumpkinLocations.addAll(locations);

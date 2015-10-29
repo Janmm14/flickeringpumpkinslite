@@ -176,6 +176,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 				}
 				PumpkinConfiguration pumpkinConfig = plugin.getPumpkinConfiguration();
 				JsonPumpkinConfiguration jsonConfig = new JsonPumpkinConfiguration(plugin.getFlickeringPumpkinsJsonFile());
+				jsonConfig.reload();
 				if (jsonConfig.getPumpkinLocations().isEmpty()) {
 					sender.sendMessage("§6Did not copied pumpkins from plugin FlickeringPumpkins because there were no locations specified.");
 				} else {
