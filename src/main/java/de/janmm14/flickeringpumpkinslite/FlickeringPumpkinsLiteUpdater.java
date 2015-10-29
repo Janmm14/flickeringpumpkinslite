@@ -54,7 +54,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 			//check values
 			int interval = plugin.getInterval();
 			int probabilityOn = plugin.getOnProbability();
-			int probabilityOff = plugin.getOnProbability();
+			int probabilityOff = plugin.getOffProbability();
 			if (interval <= 0) {
 				trySleep(TimeUnit.SECONDS.toMillis(10));
 				continue;
