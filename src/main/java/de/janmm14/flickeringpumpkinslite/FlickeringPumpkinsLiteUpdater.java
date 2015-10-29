@@ -167,7 +167,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 		}
 	}
 
-	private static List<Player> getNearbyPlayers(Location loc, int distanceSquared) {
+	public static List<Player> getNearbyPlayers(Location loc, int distanceSquared) {
 		Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
 		final List<Player> players = new ArrayList<>(onlinePlayers.size() / 2);
 		final World locWorld = loc.getWorld();

@@ -3,14 +3,18 @@ package de.janmm14.flickeringpumpkinslite;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Bat;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.Random;
 
 @RequiredArgsConstructor
 public class BatTask extends BukkitRunnable {
 
+	private static final int SOUND_DISTANCE_SQUARED = 10 * 10;
 	private final Random random = new Random();
 	private final FlickeringPumpkinsLite plugin;
 	private final Location pumpkinLocation;
@@ -33,6 +37,8 @@ public class BatTask extends BukkitRunnable {
 			bat.setHealth(2048.0);
 			bat.setNoDamageTicks(Integer.MAX_VALUE);
 			bat.setRemoveWhenFarAway(true);
+			bat.setAwake(true);
+			playScarySound(pumpkinLocation);
 			return;
 		}
 		if (bat.isDead() || !bat.isValid()) {
@@ -54,6 +60,16 @@ public class BatTask extends BukkitRunnable {
 
 			FlickeringPumpkinsLiteUpdater.sendParticle(pLoc, Color.BLACK);
 			FlickeringPumpkinsLiteUpdater.sendParticle(pLoc, Color.RED);
+		}
+	}
+
+	private void playScarySound(Location loc) {
+		playScarySound(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SOUND_DISTANCE_SQUARED));
+	}
+
+	private void playScarySound(Location loc, List<Player> players) {
+		for (Player plr : players) {
+			plr.playSound(loc, Sound.AMBIENCE_CAVE, random.nextFloat() * 2, 0); //floats: volume - pitch
 		}
 	}
 
