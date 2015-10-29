@@ -159,6 +159,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		reloadConfig();
 		readInterval();
 		readProbability();
+		updater.notifyUpdate();
 		//TODO read pumpkins
 	}
 
