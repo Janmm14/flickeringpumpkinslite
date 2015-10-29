@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FPLiteCommandHandler implements TabExecutor {
 
 	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import");
-	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default");
+	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound");
 	private static final Joiner COMMA_JOINER = Joiner.on(", ");
 	private static final String PERMISSION_CMD_PREFIX = "flickeringpumpkinslite.command";
 
@@ -121,6 +121,11 @@ public class FPLiteCommandHandler implements TabExecutor {
 							sender.sendMessage("§6Value of the option§e toggle-default §6is: §e" + plugin.isBats());
 							break;
 						}
+						case "playsound":
+						case "play-sound": {
+							sender.sendMessage("§6Value of the option§e play-sound §6is: §e" + plugin.isPlaySound());
+							break;
+						}
 						default: {
 							sender.sendMessage("§cUnknown option " + args[0]);
 							break;
@@ -143,6 +148,14 @@ public class FPLiteCommandHandler implements TabExecutor {
 						plugin.setToggleDefault(bool);
 						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e toggle-default §6is now: §e" + plugin.isToggleDefault());
+						return true;
+					}
+					case "playsound":
+					case "play-sound": {
+						boolean bool = Boolean.parseBoolean(args[2]);
+						plugin.setPlaySound(bool);
+						plugin.saveConfigChanges();
+						sender.sendMessage("§6Value of the option§e play-sound §6is now: §e" + plugin.isPlaySound());
 						return true;
 					}
 				}

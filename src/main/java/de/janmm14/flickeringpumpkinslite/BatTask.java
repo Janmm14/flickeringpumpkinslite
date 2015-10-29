@@ -86,9 +86,11 @@ public class BatTask extends BukkitRunnable {
 		playScarySound(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SOUND_DISTANCE_SQUARED));
 	}
 
-	private void playScarySound(Location loc, List<Player> players) { //TODO make sound playing configurable
-		for (Player plr : players) {
-			plr.playSound(loc, Sound.ENDERDRAGON_WINGS, 1 + random.nextFloat() * .5F, random.nextFloat() * .5F); //floats: volume - pitch
+	private void playScarySound(Location loc, List<Player> players) {
+		if (plugin.isPlaySound()) {
+			for (Player plr : players) {
+				plr.playSound(loc, Sound.ENDERDRAGON_WINGS, 1 + random.nextFloat() * .5F, 0); //floats: volume - pitch
+			}
 		}
 	}
 

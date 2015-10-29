@@ -32,11 +32,14 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final int OFF_PROBABILITY_DEFAULT = 50;
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
+	private static final boolean PLAY_SOUND_DEFAULT = true;
+
 	private static final String INTERVAL_PATH = "interval";
 	private static final String ON_PROBABILITY_PATH = "probability-on";
 	private static final String OFF_PROBABILITY_PATH = "probability-off";
 	private static final String BATS_PATH = "spawn-bats";
 	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
+	private static final String PLAY_SOUND_PATH = "play-sound";
 
 	@Getter
 	private final File flickeringPumpkinsJsonFile = new File(new File(getDataFolder().getParentFile(), "FlickeringPumkins"), "pumpkins.json");
@@ -64,6 +67,9 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Getter
 	@Setter
 	private boolean toggleDefault = TOGGLE_DEFAULT_DEFAULT;
+	@Getter
+	@Setter
+	private boolean playSound = PLAY_SOUND_DEFAULT;
 
 	@Getter
 	private ItemStack pumpkinItem;
@@ -84,12 +90,14 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			"probability-on: Probability for a pumpkin to turn on at updating (1-100)%" + NEWLINE +
 			"probability-off: Probability for a pumpkin to turn off at updating (1-100)%" + NEWLINE +
 			"spawn-bats: Whether to spawn bats with turning a pumpkin on" + NEWLINE +
-			"toggle-default: The default state of the toggle pumpkins placed turn into flickering pumpkins");
+			"toggle-default: The default state of the toggle pumpkins placed turn into flickering pumpkins" + NEWLINE +
+			"play-sound: Whether to play a sound on bat spawn");
 		cfg.addDefault(INTERVAL_PATH, INTERVAL_DEFAULT);
 		cfg.addDefault(ON_PROBABILITY_PATH, ON_PROBABILITY_DEFAULT);
 		cfg.addDefault(OFF_PROBABILITY_PATH, OFF_PROBABILITY_DEFAULT);
 		cfg.addDefault(BATS_PATH, BATS_DEFAULT);
 		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
+		cfg.addDefault(PLAY_SOUND_PATH, PLAY_SOUND_DEFAULT);
 		saveConfig();
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
@@ -156,8 +164,10 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		FileConfiguration cfg = getConfig();
 		cfg.set(INTERVAL_PATH, interval);
 		cfg.set(ON_PROBABILITY_PATH, onProbability);
+		cfg.set(OFF_PROBABILITY_PATH, offProbability);
 		cfg.set(BATS_PATH, bats);
 		cfg.set(TOGGLE_DEFAULT_PATH, toggleDefault);
+		cfg.set(PLAY_SOUND_PATH, playSound);
 		saveConfig();
 	}
 
@@ -170,6 +180,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		readProbability();
 		readBats();
 		readToggleDefault();
+		readPlaySound();
 		updater.notifyUpdate();
 	}
 
@@ -256,6 +267,10 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 
 	public void readToggleDefault() {
 		toggleDefault = getConfig().getBoolean(TOGGLE_DEFAULT_PATH);
+	}
+
+	public void readPlaySound() {
+		playSound = getConfig().getBoolean(PLAY_SOUND_PATH);
 	}
 
 	private <T extends CommandExecutor & TabCompleter> void setTabExecutor(String command, T handler) {
