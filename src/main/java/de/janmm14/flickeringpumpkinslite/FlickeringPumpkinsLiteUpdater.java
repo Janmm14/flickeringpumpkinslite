@@ -45,7 +45,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 			Set<Location> pumpkinLocations = plugin.getPumpkinConfiguration().getPumpkinLocations();
 			//add missing ones
 			for (Location loc : pumpkinLocations) {
-				states.putIfAbsent(loc, new BooleanIntTuple(false, loc.getBlock().getData()));
+				states.putIfAbsent(loc, new BooleanIntTuple(true, loc.getBlock().getData()));
 			}
 			//remove removed ones
 			Iterator<Map.Entry<Location, BooleanIntTuple>> iterator = states.entrySet().iterator();
