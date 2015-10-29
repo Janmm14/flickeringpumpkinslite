@@ -25,7 +25,7 @@ public class PumpkinBlockListener implements Listener {
 		} else if (event.getPlayer().hasPermission("flickeringpumpkinslite.allowtoggle") &&
 			xor(plugin.isToggleDefault(), plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId()))) {
 			Block block = event.getBlockPlaced();
-			if (block.getType() != Material.PUMPKIN && block.getType() != Material.JACK_O_LANTERN) {
+			if (block.getType() != Material.JACK_O_LANTERN) {
 				return;
 			}
 			setAsPumpkinLocation(block);
