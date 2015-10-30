@@ -5,6 +5,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.ParticleEffect;
 import de.janmm14.flickeringpumpkinslite.util.BooleanIntTuple;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
 
@@ -31,6 +33,8 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	private final FlickeringPumpkinsLite plugin;
 	private final Random random = new Random();
 	private final Map<Location, BooleanIntTuple> states = new HashMap<>();
+	@Getter
+	private final AtomicBoolean pluginDisabled = new AtomicBoolean(false);
 
 	public FlickeringPumpkinsLiteUpdater(FlickeringPumpkinsLite plugin) {
 		super("FlickeringPumpkinsLiteUpdater");
@@ -60,88 +64,95 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 
 	@Override
 	public void run() {
-		boolean first = true;
+		try {
+			boolean first = true;
 
-		while (plugin.isEnabled()) {
+			while (plugin.isEnabled() && !pluginDisabled.get()) {
 
-			//check values
-			int interval = plugin.getInterval();
-			int probabilityOn = plugin.getOnProbability();
-			int probabilityOff = plugin.getOffProbability();
-			if (interval <= 0) {
-				trySleep(TimeUnit.SECONDS.toMillis(10));
-				continue;
-			}
+				//check values
+				int interval = plugin.getInterval();
+				int probabilityOn = plugin.getOnProbability();
+				int probabilityOff = plugin.getOffProbability();
+				if (interval <= 0) {
+					trySleep(TimeUnit.SECONDS.toMillis(10));
+					continue;
+				}
 
-			if (first) {
-				first = false;
-			} else {
-				//noinspection UnnecessaryParentheses
-				trySleep((long) (((double) interval) / 20D * 1000D)); //interval ticks -> milliseconds
-			}
+				if (first) {
+					first = false;
+				} else {
+					//noinspection UnnecessaryParentheses
+					trySleep((long) (((double) interval) / 20D * 1000D)); //interval ticks -> milliseconds
+				}
 
-			if (plugin.getServer().getOnlinePlayers().isEmpty()) {
-				continue;
-			}
-			synchronized (states) {
-				for (Map.Entry<Location, BooleanIntTuple> entry : states.entrySet()) {
-					Location loc = entry.getKey();
-					List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
+				if (plugin.getServer().getOnlinePlayers().isEmpty()) {
+					continue;
+				}
+				synchronized (states) {
+					for (Map.Entry<Location, BooleanIntTuple> entry : states.entrySet()) {
+						Location loc = entry.getKey();
+						List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
 
-					if (nearbyPlayers.isEmpty()) {
-						continue;
-					}
+						if (nearbyPlayers.isEmpty()) {
+							continue;
+						}
 					/*if (random.nextInt(probability) == 0) {
 						continue;
 					}*/
 
-					BooleanIntTuple stateDatavalueTuple = entry.getValue();
-					boolean oldState = stateDatavalueTuple.getBool();
+						BooleanIntTuple stateDatavalueTuple = entry.getValue();
+						boolean oldState = stateDatavalueTuple.getBool();
 
-					if (oldState) {
-						//turn off probability
-						if (random.nextInt(100) >= probabilityOff) {
-							continue;
+						if (oldState) {
+							//turn off probability
+							if (random.nextInt(100) >= probabilityOff) {
+								continue;
+							}
+						} else {
+							//turn on probability
+							if (random.nextInt(100) >= probabilityOn) {
+								continue;
+							}
 						}
-					} else {
-						//turn on probability
-						if (random.nextInt(100) >= probabilityOn) {
-							continue;
+
+						WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
+						packet.setLocation(new BlockPosition(loc.toVector()));
+
+						boolean newState = !oldState;
+						stateDatavalueTuple.setBool(newState);
+
+						WrappedBlockData data = WrappedBlockData.createData(oldState ? Material.PUMPKIN : Material.JACK_O_LANTERN, stateDatavalueTuple.getInteger());
+						packet.setBlockData(data);
+
+						for (Player plr : nearbyPlayers) {
+							packet.sendPacket(plr);
 						}
-					}
 
-					WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
-					packet.setLocation(new BlockPosition(loc.toVector()));
-
-					boolean newState = !oldState;
-					stateDatavalueTuple.setBool(newState);
-
-					WrappedBlockData data = WrappedBlockData.createData(oldState ? Material.PUMPKIN : Material.JACK_O_LANTERN, stateDatavalueTuple.getInteger());
-					packet.setBlockData(data);
-
-					nearbyPlayers.forEach(packet::sendPacket);
-
-					if (newState) {
-						for (int i = 10; i > 0; i--) {
-							Location pLoc = middleAndRandomizeBlockLocation(loc);
-							sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
-							sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
+						if (newState) {
+							for (int i = 10; i > 0; i--) {
+								Location pLoc = middleAndRandomizeBlockLocation(loc);
+								sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
+								sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
+							}
+							if (random.nextInt(3) == 1) { //chance of 33.3% to spawn a bat
+								spawnBat(loc);
+							}
+						} else {
+							for (int i = 10; i > 0; i--) {
+								Location pLoc = middleAndRandomizeBlockLocation(loc);
+								sendParticle(pLoc, Color.BLACK, nearbyPlayers);
+								sendParticle(pLoc, Color.RED, nearbyPlayers);
+							}
 						}
-						if (random.nextInt(3) == 1) { //chance of 33.3% to spawn a bat
-							spawnBat(loc);
-						}
-					} else {
-						for (int i = 10; i > 0; i--) {
-							Location pLoc = middleAndRandomizeBlockLocation(loc);
-							sendParticle(pLoc, Color.BLACK, nearbyPlayers);
-							sendParticle(pLoc, Color.RED, nearbyPlayers);
-						}
-					}
-				} //end for
-			} //end synchronized
-			//sleeping / delay at start of while for better usage of continue;
-		} //end while
-		plugin.getLogger().info("The pumpkin updater shut down successfully.");
+					} //end for
+				} //end synchronized
+				//sleeping / delay at start of while for better usage of continue;
+			} //end while
+		} catch (Exception ex) {
+			plugin.getLogger().severe("Error in updater thread:");
+			ex.printStackTrace();
+		}
+		plugin.getLogger().info("The pumpkin updater shut down for unknown reasons.");
 	}
 
 	private Location middleAndRandomizeBlockLocation(Location loc) {

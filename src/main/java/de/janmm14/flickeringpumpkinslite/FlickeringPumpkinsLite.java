@@ -155,9 +155,18 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		updater.getPluginDisabled().set(true);
+		try {
+			updater.stop();
+		} catch (Exception ex) {
+			getLogger().warning("Could not stop updater thread, it will cancel itself hopefully soon. Error:");
+			ex.printStackTrace();
+		}
+		updater = null;
 		specialPumpkinCreators.clear();
 		pumpkinConfiguration.save();
-		//TODO shut down all stuff
+		pumpkinConfiguration = null;
+		saveConfigChanges();
 	}
 
 	public void saveConfigChanges() {
