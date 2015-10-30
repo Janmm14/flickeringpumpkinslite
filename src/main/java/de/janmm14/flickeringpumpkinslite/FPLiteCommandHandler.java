@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -18,10 +19,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FPLiteCommandHandler implements TabExecutor {
 
-	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import");
+	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import"); //space after options so its easier for teh user to add another argument
 	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound");
 	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
-	private static final Joiner COMMA_JOINER = Joiner.on(", ");
+	private static final Joiner COMMA_JOINER = Joiner.on("§7, §e");
 	private static final String PERMISSION_CMD_PREFIX = "flickeringpumpkinslite.command";
 
 	private final FlickeringPumpkinsLite plugin;
@@ -243,6 +244,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 	}
 
 	private void sendHelp(CommandSender sender, String alias) {
+		sender.sendMessage("§5 §m============§6 FlickeringPumpkinsLite §eHelp §5§m============");
 		sender.sendMessage("§c/" + alias + " get§7 - §6Get a special pumpkin which turns into a flickering one (regardless of the toggle)");
 		sender.sendMessage("§c/" + alias + " toggle§7 - §6Toggle any pumpkin turns into a flickering one on placement for you");
 		sender.sendMessage("§c/" + alias + " reload§7 - §6Reload the configuration from the file");
@@ -251,7 +253,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 	}
 
 	private void sendSetHelp(CommandSender sender, String alias) {
-		sender.sendMessage("§6You can modify these options: " + COMMA_JOINER.join(OPTIONS_OPTIONS));
+		sender.sendMessage("§6You can modify these options:\n§e" + COMMA_JOINER.join(OPTIONS_OPTIONS));
 		sender.sendMessage("§6To see the options value, use this command:\n§c/" + alias + " options <option>");
 		sender.sendMessage("§6To modify the options value, use this command:\n§c/" + alias + " options <option> <newvalue>");
 	}
@@ -259,6 +261,8 @@ public class FPLiteCommandHandler implements TabExecutor {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
 		if (args.length == 0) {
+			plugin.getLogger().warning("Unexpected tab complete by " + sender + " cmd: " + cmd + " alias: " + alias + " args: " + Arrays.toString(args));
+			plugin.getLogger().warning("The plugin is still working, but you should send these two warning messages to the author of this plugin to indicate that its not unexpected :)");
 			return SUBCOMMAND_LIST.stream()
 				.filter(subCmd -> sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd))
 				.collect(Collectors.toList());
