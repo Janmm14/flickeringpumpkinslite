@@ -18,7 +18,7 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 	private YamlConfiguration cfg;
 	@Getter
 	@NotNull
-	private final Set<Location> pumpkinLocations = Collections.synchronizedSet(new HashSet<>());
+	private final Set<Location> pumpkinLocations = Collections.synchronizedSet(new HashSet<Location>());
 
 	public YamlPumpkinConfiguration(@NotNull File file) {
 		super(file);

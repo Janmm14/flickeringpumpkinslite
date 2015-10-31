@@ -10,11 +10,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class FPLiteCommandHandler implements TabExecutor {
@@ -263,32 +263,47 @@ public class FPLiteCommandHandler implements TabExecutor {
 		if (args.length == 0) {
 			plugin.getLogger().warning("Unexpected tab complete by " + sender + " cmd: " + cmd + " alias: " + alias + " args: " + Arrays.toString(args));
 			plugin.getLogger().warning("The plugin is still working, but you should send these two warning messages to the author of this plugin to indicate that its not unexpected :)");
-			return SUBCOMMAND_LIST.stream()
-				.filter(subCmd -> sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd))
-				.collect(Collectors.toList());
+			List<String> r = new ArrayList<>();
+			for (String subCmd : SUBCOMMAND_LIST) {
+				if (sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd)) {
+					r.add(subCmd);
+				}
+			}
+			return r;
 		}
 		if (args.length == 1) {
 			String args0 = args[0].toLowerCase();
-			return SUBCOMMAND_LIST.stream()
-				.filter(subCmd -> subCmd.startsWith(args0))
-				.filter(subCmd -> sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd))
-				.collect(Collectors.toList());
+			List<String> r = new ArrayList<>();
+			for (String subCmd : SUBCOMMAND_LIST) {
+				if (subCmd.startsWith(args0) && sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd)) {
+					r.add(subCmd);
+				}
+			}
+			return r;
 		}
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
 				String args1 = args[1].toLowerCase();
-				return OPTIONS_OPTIONS.stream()
-					.filter(subCmd -> subCmd.startsWith(args1))
-					.collect(Collectors.toList());
+				List<String> r = new ArrayList<>();
+				for (String subCmd : OPTIONS_OPTIONS) {
+					if (subCmd.startsWith(args1)) {
+						r.add(subCmd);
+					}
+				}
+				return r;
 			}
 		}
 		if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
 				if (args[1].equalsIgnoreCase("spawn-bats") || args[1].equalsIgnoreCase("toggle-default") || args[1].equalsIgnoreCase("play-sound")) {
 					String args2 = args[2].toLowerCase();
-					return TRUE_AND_FALSE.stream()
-						.filter(subCmd -> subCmd.startsWith(args2))
-						.collect(Collectors.toList());
+					List<String> r = new ArrayList<>();
+					for (String subCmd : TRUE_AND_FALSE) {
+						if (subCmd.startsWith(args2)) {
+							r.add(subCmd);
+						}
+					}
+					return r;
 				}
 			}
 		}
