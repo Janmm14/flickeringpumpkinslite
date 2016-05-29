@@ -1,16 +1,17 @@
 package de.janmm14.flickeringpumpkinslite.pumpkinconfig;
 
-import lombok.Getter;
-import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
+import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO support not loaded worlds
 
@@ -22,7 +23,6 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 
 	public YamlPumpkinConfiguration(@NotNull File file) {
 		super(file);
-
 	}
 
 	@Override
@@ -50,6 +50,7 @@ public class YamlPumpkinConfiguration extends PumpkinConfiguration { //TODO supp
 		}
 	}
 
+	@Override
 	public void copyFrom(PumpkinConfiguration pumpkinConfiguration) {
 		pumpkinLocations.clear();
 		pumpkinLocations.addAll(pumpkinConfiguration.getPumpkinLocations());

@@ -1,19 +1,5 @@
 package de.janmm14.flickeringpumpkinslite;
 
-import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
-import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.ParticleEffect;
-import de.janmm14.flickeringpumpkinslite.util.BooleanIntTuple;
-import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +10,23 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import lombok.Getter;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+
+import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+
+import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.ParticleEffect;
+import de.janmm14.flickeringpumpkinslite.util.BooleanIntTuple;
 
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
 

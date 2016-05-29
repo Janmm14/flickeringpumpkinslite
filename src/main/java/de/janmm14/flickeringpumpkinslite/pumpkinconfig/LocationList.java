@@ -1,9 +1,9 @@
 package de.janmm14.flickeringpumpkinslite.pumpkinconfig;
 
-import org.bukkit.Location;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.bukkit.Location;
 
 /**
  * Class to save generics of the list with gson

@@ -1,25 +1,28 @@
 package de.janmm14.flickeringpumpkinslite;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import de.janmm14.flickeringpumpkinslite.pumpkinconfig.JsonPumpkinConfiguration;
-import de.janmm14.flickeringpumpkinslite.pumpkinconfig.PumpkinConfiguration;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+
+import de.janmm14.flickeringpumpkinslite.pumpkinconfig.JsonPumpkinConfiguration;
+import de.janmm14.flickeringpumpkinslite.pumpkinconfig.PumpkinConfiguration;
+
 @RequiredArgsConstructor
 public class FPLiteCommandHandler implements TabExecutor {
 
-	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get","toggle", "reload", "options", "import"); //space after options so its easier for teh user to add another argument
+	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import");
 	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound");
 	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
 	private static final Joiner COMMA_JOINER = Joiner.on("§7, §e");

@@ -1,6 +1,7 @@
 package de.janmm14.flickeringpumpkinslite;
 
 import lombok.RequiredArgsConstructor;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

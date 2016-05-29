@@ -950,7 +950,7 @@ public enum ParticleEffect {
 		public ParticleData(Material material, byte data) {
 			this.material = material;
 			this.data = data;
-			this.packetData = new int[] { material.getId(), data };
+			this.packetData = new int[]{material.getId(), data};
 		}
 
 		/**
@@ -1235,7 +1235,6 @@ public enum ParticleEffect {
 		public float getValueZ() {
 			return 0;
 		}
-
 	}
 
 	/**
@@ -1368,7 +1367,7 @@ public enum ParticleEffect {
 		 * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
 		 * @param data Data of the effect
 		 * @throws IllegalArgumentException If the speed is lower than 0
-		 * @see #ParticleEffect(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
+		 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
 		 */
 		public ParticlePacket(ParticleEffect effect, Vector direction, float speed, boolean longDistance, ParticleData data) throws IllegalArgumentException {
 			this(effect, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ(), speed, 0, longDistance, data);
@@ -1380,7 +1379,7 @@ public enum ParticleEffect {
 		 * @param effect Particle effect
 		 * @param color Color of the particle
 		 * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
-		 * @see #ParticleEffect(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
+		 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
 		 */
 		public ParticlePacket(ParticleEffect effect, ParticleColor color, boolean longDistance) {
 			this(effect, color.getValueX(), color.getValueY(), color.getValueZ(), 1, 0, longDistance, null);
@@ -1461,7 +1460,7 @@ public enum ParticleEffect {
 					ReflectionUtils.setValue(packet, true, "j", longDistance);
 					if (data != null) {
 						int[] packetData = data.getPacketData();
-						ReflectionUtils.setValue(packet, true, "k", effect == ParticleEffect.ITEM_CRACK ? packetData : new int[] { packetData[0] | (packetData[1] << 12) });
+						ReflectionUtils.setValue(packet, true, "k", effect == ParticleEffect.ITEM_CRACK ? packetData : new int[]{packetData[0] | (packetData[1] << 12)});
 					}
 				}
 				ReflectionUtils.setValue(packet, true, "b", (float) center.getX());

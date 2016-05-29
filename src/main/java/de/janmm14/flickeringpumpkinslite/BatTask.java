@@ -1,17 +1,18 @@
 package de.janmm14.flickeringpumpkinslite;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
 import lombok.RequiredArgsConstructor;
+
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 
 @RequiredArgsConstructor
 public class BatTask extends BukkitRunnable {
@@ -67,7 +68,7 @@ public class BatTask extends BukkitRunnable {
 
 		for (Bat bat : bats) {
 			if (random.nextInt(10) != 0) { //chance 10% to continue - 90% return here
-				return;
+				break;
 			}
 
 			for (int i = 10; i > 0; i--) {

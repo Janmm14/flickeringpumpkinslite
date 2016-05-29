@@ -105,8 +105,8 @@
             <id>janmm14</id>
             <name>Janmm14</name>
             <url>https://janmm14.de</url>
-            <organization>MinoTopia</organization>
-            <organizationUrl>https://www.minotopia.me</organizationUrl>
+            <organization>ClashMC.eu</organization>
+            <organizationUrl>http://www.clashmc.eu</organizationUrl>
             <roles>
                 <role>developer</role>
                 <role>administrator</role>
@@ -116,13 +116,13 @@
     </developers>
 
     <organization>
-        <name>MinoTopia</name>
-        <url>https://www.minotopia.me</url>
+        <name>ClashMC.eu</name>
+        <url>http://www.clashmc.eu</url>
     </organization>
 
     <scm>
-        <connection>scm:git:git@bitbucket.org:janmm14/flickeringpumpkinslite.git</connection>
-        <developerConnection>scm:git:git@bitbucket.org:janmm14/flickeringpumpkinslite.git</developerConnection>
-        <url>git@bitbucket.org:janmm14/flickeringpumpkinslite.git</url>
+        <connection>scm:git:git@github.com:janmm14/flickeringpumpkinslite.git</connection>
+        <developerConnection>scm:git:git@github.com:janmm14/flickeringpumpkinslite.git</developerConnection>
+        <url>git@github.com:janmm14/flickeringpumpkinslite.git</url>
     </scm>
 </project>
