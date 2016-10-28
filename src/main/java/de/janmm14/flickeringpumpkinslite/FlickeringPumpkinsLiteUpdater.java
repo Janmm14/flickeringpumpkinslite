@@ -139,7 +139,7 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 								sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
 								sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
 							}
-							if (random.nextInt(3) == 1) { //chance of 33.3% to spawn a bat
+							if (random.nextInt(10) == 6) { //chance of 10% to spawn a bat
 								spawnBat(loc);
 							}
 						} else {

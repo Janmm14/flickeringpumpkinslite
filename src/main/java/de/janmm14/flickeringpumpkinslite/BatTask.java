@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -67,7 +68,7 @@ public class BatTask extends BukkitRunnable {
 		count++;
 
 		for (Bat bat : bats) {
-			if (random.nextInt(10) != 0) { //chance 10% to continue - 90% return here
+			if (random.nextInt(10) != 0) { //chance 10% to continue - 90% breaks here
 				break;
 			}
 
@@ -90,7 +91,7 @@ public class BatTask extends BukkitRunnable {
 	private void playScarySound(Location loc, List<Player> players) {
 		if (plugin.isPlaySound()) {
 			for (Player plr : players) {
-				plr.playSound(loc, Sound.ENDERDRAGON_WINGS, 1 + random.nextFloat() * .5F, 0); //floats: volume - pitch
+				plr.playSound(loc, getScarySound(), 1 + random.nextFloat() * .5F, 0); //floats: volume - pitch
 			}
 		}
 	}
@@ -102,5 +103,14 @@ public class BatTask extends BukkitRunnable {
 			System.out.println("[FlickeringPumpkinsLite] Could not cancel bat task!");
 			ex.printStackTrace();
 		}
+	}
+
+	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+	private static Sound getScarySound() {
+		try {
+			return Sound.ENDERDRAGON_WINGS;
+		} catch (NoSuchFieldError ex) {}
+
+		return (Sound) Sound.class.getField("ENTITY_ENDERDRAGON_FLAP").get(null);
 	}
 }
