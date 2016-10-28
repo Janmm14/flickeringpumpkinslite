@@ -21,6 +21,7 @@ public class LocationList extends ArrayList<Location> {
 		super(c);
 	}
 
+	@Override
 	public LocationList clone() {
 		return (LocationList) super.clone();
 	}
