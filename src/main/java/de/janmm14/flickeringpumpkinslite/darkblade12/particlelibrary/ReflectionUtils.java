@@ -426,7 +426,13 @@ public final class ReflectionUtils {
 		 * @return The server version
 		 */
 		public static String getServerVersion() {
-			return Bukkit.getServer().getClass().getPackage().getName().substring(23);
+			return Bukkit.getServer().getClass().getPackage().getName().substring("org.bukkit.craftbukkit.".length());
+		}
+
+		public static int getServerVersionSecondInt() {
+			String ver = getServerVersion();
+			String[] split = ver.split("_");
+			return Integer.parseInt(split[1]);
 		}
 	}
 
