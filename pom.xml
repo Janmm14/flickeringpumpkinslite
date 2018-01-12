@@ -98,6 +98,10 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>janmm14-public</id>
+            <url>https://repo.janmm14.de/repository/public/</url>
+        </repository>
     </repositories>
 
     <developers>
@@ -105,8 +109,6 @@
             <id>janmm14</id>
             <name>Janmm14</name>
             <url>https://janmm14.de</url>
-            <organization>ClashMC.eu</organization>
-            <organizationUrl>http://www.clashmc.eu</organizationUrl>
             <roles>
                 <role>developer</role>
                 <role>administrator</role>
@@ -115,14 +117,35 @@
         </developer>
     </developers>
 
-    <organization>
-        <name>ClashMC.eu</name>
-        <url>http://www.clashmc.eu</url>
-    </organization>
-
     <scm>
         <connection>scm:git:git@github.com:janmm14/flickeringpumpkinslite.git</connection>
         <developerConnection>scm:git:git@github.com:janmm14/flickeringpumpkinslite.git</developerConnection>
         <url>git@github.com:janmm14/flickeringpumpkinslite.git</url>
     </scm>
+
+    <ciManagement>
+        <system>jenkins</system>
+        <url>https://s.janmm14.de/flickeringpumpkinsliteci</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/Janmm14/flickeringpumpkinslite/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>janmm14-public-releases</id>
+            <url>https://repo.janmm14.de/artifactory/public-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>janmm14-public-snapshots</id>
+            <url>https://repo.janmm14.de/artifactory/public-snapshots/</url>
+        </snapshotRepository>
+        <site>
+            <id>janmm14-ci</id>
+            <url>https://ci.janmm14.de/job/public~JsonMessageMaker/</url>
+        </site>
+        <downloadUrl>https://s.janmm14.de/flickeringpumpkinsliteci</downloadUrl>
+    </distributionManagement>
 </project>
