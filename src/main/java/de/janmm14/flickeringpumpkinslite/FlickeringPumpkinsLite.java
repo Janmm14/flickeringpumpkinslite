@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -89,6 +90,11 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		//Load classes to not error on disable in case of other errors
+		BatTask.class.getName();
+		FlickeringPumpkinsLiteUpdater.class.getName();
+		PumpkinConfiguration.class.getName();
+
 		setTabExecutor("flickeringpumpkinslite", new FPLiteCommandHandler(this));
 		getServer().getPluginManager().registerEvents(new PumpkinBlockListener(this), this);
 		updater = new FlickeringPumpkinsLiteUpdater(this);
@@ -114,6 +120,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
 		cfg.addDefault(PLAY_SOUND_PATH, PLAY_SOUND_DEFAULT);
 //		cfg.addDefault(SCARY_PATH, SCARY_DEFAULT);
+		cfg.addDefault(SOUND_PATH, SOUND_DEFAULT);
 		saveConfig();
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
@@ -238,7 +245,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			return;
 		}
 		if (interval == 0) {
-			getLogger().warning("You set the interval to zero. That means the plugin is disabled.");
+			getLogger().warning("You set the interval to zero. That means the plugin is essentially disabled.");
 		}
 		this.interval = interval;
 	}
@@ -316,7 +323,10 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		String sound = getConfig().getString(SOUND_PATH);
 		if (sound == null) {
 			getLogger().severe("No sound configured!");
+			getLogger().severe("Setting sound now to " + this.sound);
+			return;
 		}
+		sound = sound.toUpperCase(Locale.ENGLISH);
 		try {
 			Sound.valueOf(sound);
 			this.sound = sound;

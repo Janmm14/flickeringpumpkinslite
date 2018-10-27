@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import de.janmm14.flickeringpumpkinslite.pumpkinconfig.PumpkinConfiguration;
 @RequiredArgsConstructor
 public class FPLiteCommandHandler implements TabExecutor {
 
-	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import", "listsounds");
+	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import", "list-sounds");
 	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound"/*, "scary"*/, "sound");
 	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
 	private static final List<String> SOUNDS;
@@ -50,7 +51,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 			sendHelp(sender, alias);
 			return true;
 		}
-		switch (args[0].toLowerCase()) {
+		switch (args[0].toLowerCase(Locale.ENGLISH)) {
 			case "get": {
 				if (!(sender instanceof Player)) {
 					sender.sendMessage("§cThis subcommand is only available as a player.");
@@ -111,7 +112,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					break;
 				}
 				if (args.length == 2) {
-					switch (args[1].toLowerCase()) {
+					switch (args[1].toLowerCase(Locale.ENGLISH)) {
 						case "interval": {
 							sender.sendMessage("§6Value of the option§e interval §6is: §e" + plugin.getInterval());
 							break;
@@ -157,7 +158,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					break;
 				}
 				// args.length == 3
-				switch (args[1].toLowerCase()) {
+				switch (args[1].toLowerCase(Locale.ENGLISH)) {
 					case "spawnbats":
 					case "spawn-bats": {
 						boolean bool = Boolean.parseBoolean(args[2]);
@@ -223,7 +224,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					sender.sendMessage("§cYou may only use positive numbers.");
 					break;
 				}
-				switch (args[1].toLowerCase()) {
+				switch (args[1].toLowerCase(Locale.ENGLISH)) {
 					case "interval": {
 						if (val > 1000) {
 							sender.sendMessage("§cInterval too high. §7However if you really want it, set it in the configuration file.");
@@ -282,7 +283,8 @@ public class FPLiteCommandHandler implements TabExecutor {
 				}
 				break;
 			}
-			case "listsounds:": {
+			case "listsounds":
+			case "list-sounds": {
 				if (!sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
 					sender.sendMessage("§cYou do not have permission to use this sub-command!");
 					return true;
@@ -290,12 +292,12 @@ public class FPLiteCommandHandler implements TabExecutor {
 				StringBuilder sb = new StringBuilder();
 				Sound[] values = Sound.values();
 				if (values.length > 0) {
-					sb.append(values[0].name());
+					sb.append("§e").append(values[0].name());
 					for (int i = 1, valuesLength = values.length; i < valuesLength; i++) {
 						Sound s = values[i];
-						sb.append(", ").append(s.name());
+						sb.append("§6, §e").append(s.name());
 					}
-					sender.sendMessage("Available sounds: " + sb.toString());
+					sender.sendMessage("§6Available sounds: " + sb.toString());
 				}
 				break;
 			}
@@ -319,6 +321,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 		sender.sendMessage("§c/" + alias + " reload§7 - §6Reload the configuration from the file");
 		sender.sendMessage("§c/" + alias + " options <option> [value]§7 - §6See or write configuration options");
 		sender.sendMessage("§c/" + alias + " import§7 - §6Import data from §eFlickeringPumpkins §6plugin");
+		sender.sendMessage("§c/" + alias + " list-sounds§7 - §6List available sounds");
 	}
 
 	private void sendSetHelp(CommandSender sender, String alias) {
@@ -341,7 +344,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 			return r;
 		}
 		if (args.length == 1) {
-			String args0 = args[0].toLowerCase();
+			String args0 = args[0].toLowerCase(Locale.ENGLISH);
 			List<String> r = new ArrayList<>();
 			for (String subCmd : SUBCOMMAND_LIST) {
 				if (subCmd.startsWith(args0) && sender.hasPermission(PERMISSION_CMD_PREFIX + "." + subCmd)) {
@@ -352,7 +355,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 		}
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
-				String args1 = args[1].toLowerCase();
+				String args1 = args[1].toLowerCase(Locale.ENGLISH);
 				List<String> r = new ArrayList<>();
 				for (String subCmd : OPTIONS_OPTIONS) {
 					if (subCmd.startsWith(args1)) {
@@ -366,7 +369,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
 				final String args1 = args[1];
 				if (args1.equalsIgnoreCase("spawn-bats") || args1.equalsIgnoreCase("spawnbats") || args1.equalsIgnoreCase("toggle-default") || args1.equalsIgnoreCase("toggledefault") || args1.equalsIgnoreCase("play-sound") || args1.equalsIgnoreCase("playsound")/* || args[1].equalsIgnoreCase("scary")*/) {
-					String args2 = args[2].toLowerCase();
+					String args2 = args[2].toLowerCase(Locale.ENGLISH);
 					List<String> r = new ArrayList<>();
 					for (String subCmd : TRUE_AND_FALSE) {
 						if (subCmd.startsWith(args2)) {
@@ -376,7 +379,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					return r;
 				}
 				if (args1.equalsIgnoreCase("sound")) {
-					String args2 = args[2].toLowerCase();
+					String args2 = args[2].toLowerCase(Locale.ENGLISH);
 					List<String> r = new ArrayList<>();
 					for (String subCmd : SOUNDS) {
 						if (subCmd.startsWith(args2)) {
