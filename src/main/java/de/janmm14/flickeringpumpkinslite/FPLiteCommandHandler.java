@@ -34,7 +34,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 	static {
 		final ImmutableList.Builder<String> builder = ImmutableList.builder();
 		for (Sound value : Sound.values()) {
-			builder.add(value.name());
+			builder.add(value.name().toUpperCase(Locale.ENGLISH));
 		}
 		SOUNDS = builder.build();
 	}
@@ -379,7 +379,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					}
 					return r;
 				} else if (args1.equalsIgnoreCase("sound")) {
-					String args2 = args[2].toLowerCase(Locale.ENGLISH);
+					String args2 = args[2].toUpperCase(Locale.ENGLISH);
 					List<String> r = new ArrayList<>();
 					for (String subCmd : SOUNDS) {
 						if (subCmd.startsWith(args2)) {
