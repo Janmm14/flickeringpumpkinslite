@@ -1,5 +1,5 @@
 name: ${project.name}
-version: ${project.version}-${env.BUILD_NUMBER}
+version: ${project.version}
 description: ${project.description}
 author: ${bukkit.pluginyml.author}
 main: ${bukkit.pluginyml.main}

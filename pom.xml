@@ -56,7 +56,7 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.artifactId}-${project.version}-${env.BUILD_NUMBER}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
 
         <resources>
             <resource>
