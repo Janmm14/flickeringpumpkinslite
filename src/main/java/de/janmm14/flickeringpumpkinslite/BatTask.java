@@ -63,7 +63,7 @@ public class BatTask extends BukkitRunnable {
 				bat.setAwake(true);
 				bats.add(bat);
 			}
-			if (random.nextInt(4) == 0) { //chance 25% to play sound, 75% of bat spawns, no sound is played
+			if (random.nextInt(4) < 2) { //chance 50% to play sound
 				playScarySoundWings(pumpkinLocation); //only once, not per bat
 			}
 			return;
