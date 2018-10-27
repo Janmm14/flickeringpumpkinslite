@@ -377,8 +377,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 						}
 					}
 					return r;
-				}
-				if (args1.equalsIgnoreCase("sound")) {
+				} else if (args1.equalsIgnoreCase("sound")) {
 					String args2 = args[2].toLowerCase(Locale.ENGLISH);
 					List<String> r = new ArrayList<>();
 					for (String subCmd : SOUNDS) {
