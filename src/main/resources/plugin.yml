@@ -10,7 +10,7 @@ softdepend: [FlickeringPumkins] #For better and easier checking whether the plug
 commands:
   flickeringpumpkinslite:
     description: Handle Flickering pumpkins
-    aliases: [fpl, flickerpumpink, flickerpumpinks, flickeringpumpink, flickeringpumpinks, pumpkins, fp]
+    aliases: [fpl, flickerpumpkin, flickerpumpkins, flickeringpumpkin, flickeringpumpkins, pumpkins, fp]
     permission: flickeringpumpkinslite.command.use
     permission-message: "§6${project.name} §7- §6v${project.version}-${env.BUILD_NUMBER} §7- §6by ${bukkit.pluginyml.author}"
     usage: "/<command> help"
