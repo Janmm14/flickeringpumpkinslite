@@ -131,8 +131,8 @@ public class BatTask extends BukkitRunnable {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Nullable
-	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
 	private Sound getScarySoundWings() {
 		try {
 			final String sound = plugin.getSound();
