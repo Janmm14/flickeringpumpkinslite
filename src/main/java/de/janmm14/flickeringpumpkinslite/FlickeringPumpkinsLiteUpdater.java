@@ -30,6 +30,7 @@ import de.janmm14.flickeringpumpkinslite.util.BooleanIntTuple;
 
 public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { //TODO end gracefully
 
+	//	private static final int SCARY_DISTANCE_SQUARED = 5 * 5;
 	private static final int PUMPKIN_DISTANCE_SQUARDED = 100 * 100;
 	private static final int PARTICLE_DISTANCE_SQUARED = 40 * 40;
 
@@ -38,6 +39,9 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 	private final Map<Location, BooleanIntTuple> states = new HashMap<>();
 	@Getter
 	private final AtomicBoolean pluginDisabled = new AtomicBoolean(false);
+//	private final Cache<UUID, Boolean> scared = CacheBuilder.newBuilder()
+//		.expireAfterWrite(15, TimeUnit.SECONDS)
+//		.build();
 
 	public FlickeringPumpkinsLiteUpdater(FlickeringPumpkinsLite plugin) {
 		super("FlickeringPumpkinsLiteUpdater");
@@ -95,17 +99,17 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 				}
 				synchronized (states) {
 					for (Map.Entry<Location, BooleanIntTuple> entry : states.entrySet()) {
-						Location loc = entry.getKey();
+						final Location loc = entry.getKey();
 						List<Player> nearbyPlayers = getNearbyPlayers(loc, PUMPKIN_DISTANCE_SQUARDED);
 
 						if (nearbyPlayers.isEmpty()) {
 							continue;
 						}
-					/*if (random.nextInt(probability) == 0) {
-						continue;
-					}*/
+						/*if (random.nextInt(probability) == 0) {
+							continue;
+						}*/
 
-						BooleanIntTuple stateDatavalueTuple = entry.getValue();
+						final BooleanIntTuple stateDatavalueTuple = entry.getValue();
 						boolean oldState = stateDatavalueTuple.getBool();
 
 						if (oldState) {
@@ -139,9 +143,55 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 								sendParticle(pLoc, Color.YELLOW, nearbyPlayers);
 								sendParticle(pLoc, Color.ORANGE, nearbyPlayers);
 							}
-							if (random.nextInt(10) == 6) { //chance of 10% to spawn a bat
+							if (random.nextInt(100) < 10) { //chance of 10% to spawn a bat
 								spawnBat(loc);
 							}
+							/*if (plugin.isScary()) {
+								for (final Player plr : getNearbyPlayers(loc, SCARY_DISTANCE_SQUARED)) {
+									if (scared.getIfPresent(plr.getUniqueId()) != null) {
+										continue;
+									}
+									scared.put(plr.getUniqueId(), Boolean.TRUE);
+									if (random.nextInt(100) < 50) { //chance 10% //TODO
+										plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+											@Override
+											public void run() {
+												plr.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 0, false, false));
+												plr.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 25, 0, false, false));
+												plr.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 28, 4, false, false));
+												BlockVector blockVector = loc.clone().toVector().toBlockVector();
+												Vector pumpkinDir = new Vector(blockVector.getX(), blockVector.getY(), blockVector.getZ()).add(new Vector(.5, .5, .5)).subtract(plr.getEyeLocation().toVector());
+												final Location location = plr.getLocation().setDirection(pumpkinDir.normalize());
+												plr.teleport(location);
+												for (int i = 0; i < 28; i+=2) {
+													final int i_ = i;
+													plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+														@Override
+														public void run() {
+															plr.teleport(location);
+															WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange();
+															packet.setLocation(new BlockPosition(loc.toVector()));
+
+															boolean newState = i_ % 4 == 0;
+
+															WrappedBlockData data = WrappedBlockData.createData(newState ? Material.JACK_O_LANTERN : Material.PUMPKIN, stateDatavalueTuple.getInteger());
+															packet.setBlockData(data);
+															packet.sendPacket(plr);
+														}
+													}, 1 + i);
+												}
+												playScarySoundScream1(location, Collections.singletonList(plr));
+//												plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+//													@Override
+//													public void run() {
+//														playScarySoundScream1(location, Collections.singletonList(plr));
+//													}
+//												}, 10);
+											}
+										});
+									}
+								}
+							}*/
 						} else {
 							for (int i = 10; i > 0; i--) {
 								Location pLoc = middleAndRandomizeBlockLocation(loc);
@@ -204,4 +254,50 @@ public class FlickeringPumpkinsLiteUpdater extends Thread implements Listener { 
 			e.printStackTrace();
 		}
 	}
+
+	/*
+	private void playScarySoundScream1(Location loc) {
+		playScarySoundScream1(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SCARY_DISTANCE_SQUARED));
+	}
+
+	private void playScarySoundScream1(Location loc, List<Player> players) {
+		if (plugin.isPlaySound()) {
+			for (Player plr : players) {
+				plr.playSound(loc, getScarySoundScream1(), 1, 2); //floats: volume - pitch
+			}
+		}
+	}
+
+	private void playScarySoundScream2(Location loc) {
+		playScarySoundScream2(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SCARY_DISTANCE_SQUARED));
+	}
+
+	private void playScarySoundScream2(Location loc, List<Player> players) {
+		if (plugin.isPlaySound()) {
+			for (Player plr : players) {
+				plr.playSound(loc, getScarySoundScream2(), .25f, 2); //floats: volume - pitch
+			}
+		}
+	}
+
+	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+	private static Sound getScarySoundScream1() {
+		try {
+			return Sound.WOLF_HOWL; //long scream
+		} catch (NoSuchFieldError ex) {
+//			ex.printStackTrace();
+		}
+		return (Sound) Sound.class.getField("ENTITY_WOLF_HOWL").get(null);
+	}
+
+	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+	private static Sound getScarySoundScream2() {
+		try {
+			return Sound.GHAST_SCREAM; //short scream
+		} catch (NoSuchFieldError ex) {
+//			ex.printStackTrace();
+		}
+		return (Sound) Sound.class.getField("ENTITY_GHAST_SCREAM").get(null);
+	}
+	*/
 }

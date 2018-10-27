@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -22,11 +23,20 @@ import de.janmm14.flickeringpumpkinslite.pumpkinconfig.PumpkinConfiguration;
 @RequiredArgsConstructor
 public class FPLiteCommandHandler implements TabExecutor {
 
-	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import");
-	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound");
+	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import", "listsounds");
+	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound"/*, "scary"*/, "sound");
 	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
+	private static final List<String> SOUNDS;
 	private static final Joiner COMMA_JOINER = Joiner.on("§7, §e");
 	private static final String PERMISSION_CMD_PREFIX = "flickeringpumpkinslite.command";
+
+	static {
+		final ImmutableList.Builder<String> builder = ImmutableList.builder();
+		for (Sound value : Sound.values()) {
+			builder.add(value.name());
+		}
+		SOUNDS = builder.build();
+	}
 
 	private final FlickeringPumpkinsLite plugin;
 
@@ -131,6 +141,14 @@ public class FPLiteCommandHandler implements TabExecutor {
 							sender.sendMessage("§6Value of the option§e play-sound §6is: §e" + plugin.isPlaySound());
 							break;
 						}
+//						case "scary": {
+//							sender.sendMessage("§6Value of the option§e scary §6is: §e" + plugin.isScary());
+//							break;
+//						}
+						case "sound": {
+							sender.sendMessage("§6Value of the option§e sound §6is: §e" + plugin.getSound());
+							break;
+						}
 						default: {
 							sender.sendMessage("§cUnknown option " + args[0]);
 							break;
@@ -138,6 +156,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					}
 					break;
 				}
+				// args.length == 3
 				switch (args[1].toLowerCase()) {
 					case "spawnbats":
 					case "spawn-bats": {
@@ -163,6 +182,35 @@ public class FPLiteCommandHandler implements TabExecutor {
 						sender.sendMessage("§6Value of the option§e play-sound §6is now: §e" + plugin.isPlaySound());
 						return true;
 					}
+//					case "scary": {
+//						boolean bool = Boolean.parseBoolean(args[2]);
+//						plugin.setScary(bool);
+//						plugin.saveConfigChanges();
+//						sender.sendMessage("§6Value of the option§e scary §6is now: §e" + plugin.isScary());
+//						return true;
+//					}
+					case "sound": {
+						try {
+							Sound.valueOf(args[2]);
+
+							plugin.setSound(args[2]);
+							plugin.saveConfigChanges();
+							sender.sendMessage("§6Value of the option§e sound §6is now: §e" + plugin.getSound());
+						} catch (IllegalArgumentException ex) {
+							sender.sendMessage("§cNo sound with the name §6" + plugin.getSound() + "§c found, option not changed.");
+							StringBuilder sb = new StringBuilder();
+							Sound[] values = Sound.values();
+							if (values.length > 0) {
+								sb.append(values[0].name());
+								for (int i = 1, valuesLength = values.length; i < valuesLength; i++) {
+									Sound s = values[i];
+									sb.append(", ").append(s.name());
+								}
+								sender.sendMessage("Available sounds: " + sb.toString());
+							}
+						}
+						return true;
+					}
 				}
 				int val;
 				try {
@@ -173,6 +221,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 				}
 				if (val < 0) {
 					sender.sendMessage("§cYou may only use positive numbers.");
+					break;
 				}
 				switch (args[1].toLowerCase()) {
 					case "interval": {
@@ -230,6 +279,23 @@ public class FPLiteCommandHandler implements TabExecutor {
 					pumpkinConfig.copyFrom(jsonConfig);
 					pumpkinConfig.save();
 					sender.sendMessage("§6Copied pumpkins from plugin FlickeringPumkins.");
+				}
+				break;
+			}
+			case "listsounds:": {
+				if (!sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
+					sender.sendMessage("§cYou do not have permission to use this sub-command!");
+					return true;
+				}
+				StringBuilder sb = new StringBuilder();
+				Sound[] values = Sound.values();
+				if (values.length > 0) {
+					sb.append(values[0].name());
+					for (int i = 1, valuesLength = values.length; i < valuesLength; i++) {
+						Sound s = values[i];
+						sb.append(", ").append(s.name());
+					}
+					sender.sendMessage("Available sounds: " + sb.toString());
 				}
 				break;
 			}
@@ -298,10 +364,21 @@ public class FPLiteCommandHandler implements TabExecutor {
 		}
 		if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("options") && sender.hasPermission(PERMISSION_CMD_PREFIX + ".options")) {
-				if (args[1].equalsIgnoreCase("spawn-bats") || args[1].equalsIgnoreCase("toggle-default") || args[1].equalsIgnoreCase("play-sound")) {
+				final String args1 = args[1];
+				if (args1.equalsIgnoreCase("spawn-bats") || args1.equalsIgnoreCase("spawnbats") || args1.equalsIgnoreCase("toggle-default") || args1.equalsIgnoreCase("toggledefault") || args1.equalsIgnoreCase("play-sound") || args1.equalsIgnoreCase("playsound")/* || args[1].equalsIgnoreCase("scary")*/) {
 					String args2 = args[2].toLowerCase();
 					List<String> r = new ArrayList<>();
 					for (String subCmd : TRUE_AND_FALSE) {
+						if (subCmd.startsWith(args2)) {
+							r.add(subCmd);
+						}
+					}
+					return r;
+				}
+				if (args1.equalsIgnoreCase("sound")) {
+					String args2 = args[2].toLowerCase();
+					List<String> r = new ArrayList<>();
+					for (String subCmd : SOUNDS) {
 						if (subCmd.startsWith(args2)) {
 							r.add(subCmd);
 						}

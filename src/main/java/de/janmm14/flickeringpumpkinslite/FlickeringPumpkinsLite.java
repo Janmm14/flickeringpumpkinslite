@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -35,6 +36,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final boolean PLAY_SOUND_DEFAULT = true;
+	private static final boolean SCARY_DEFAULT = false;
+	private static final String SOUND_DEFAULT = "ENDERDRAGON_WINGS";
 
 	private static final String INTERVAL_PATH = "interval";
 	private static final String ON_PROBABILITY_PATH = "probability-on";
@@ -42,6 +45,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final String BATS_PATH = "spawn-bats";
 	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
 	private static final String PLAY_SOUND_PATH = "play-sound";
+	private static final String SCARY_PATH = "scary";
+	private static final String SOUND_PATH = "sound";
 
 	@Getter
 	private final File flickeringPumpkinsJsonFile = new File(new File(getDataFolder().getParentFile(), "FlickeringPumkins"), "pumpkins.json");
@@ -72,6 +77,12 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Getter
 	@Setter
 	private boolean playSound = PLAY_SOUND_DEFAULT;
+	@Getter
+	@Setter
+	private boolean scary = SCARY_DEFAULT;
+	@Getter
+	@Setter
+	private String sound = SOUND_DEFAULT;
 
 	@Getter
 	private ItemStack pumpkinItem;
@@ -84,8 +95,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 
 		FileConfiguration cfg = getConfig();
 		cfg.options().copyDefaults(true).header("FlickeringPumpkinsLite configuration file" + NEWLINE +
-			"GNU GPL v3 modified license - Janmm14 - Copyright since 2015" + NEWLINE +
-			"See LICENSE file in the jar (use your favorite extractor) or go to my github." +
+			"GNU GPL v3 modified license - Janmm14 - Copyright 2015 - 2018 (and further)" + NEWLINE +
+			"See LICENSE file in the jar (use your favorite zip extractor) or go to my github." +
 			NEWLINE +
 			NEWLINE +
 			"interval: how often the pumpkin should be checked for update (measured in ticks, 20 = 1 second)" + NEWLINE +
@@ -93,13 +104,16 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			"probability-off: Probability for a pumpkin to turn off at updating (1-100)%" + NEWLINE +
 			"spawn-bats: Whether to spawn bats with turning a pumpkin on" + NEWLINE +
 			"toggle-default: The default state of the toggle pumpkins placed turn into flickering pumpkins" + NEWLINE +
-			"play-sound: Whether to play a sound on bat spawn");
+			"play-sound: Whether to play a sound on bat spawn" + NEWLINE +
+//			"scary: Whether to enable scary mode" + NEWLINE +
+			"sound: What sound should be played");
 		cfg.addDefault(INTERVAL_PATH, INTERVAL_DEFAULT);
 		cfg.addDefault(ON_PROBABILITY_PATH, ON_PROBABILITY_DEFAULT);
 		cfg.addDefault(OFF_PROBABILITY_PATH, OFF_PROBABILITY_DEFAULT);
 		cfg.addDefault(BATS_PATH, BATS_DEFAULT);
 		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
 		cfg.addDefault(PLAY_SOUND_PATH, PLAY_SOUND_DEFAULT);
+//		cfg.addDefault(SCARY_PATH, SCARY_DEFAULT);
 		saveConfig();
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
@@ -158,6 +172,12 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		updater.getPluginDisabled().set(true);
+		List<BatTask> batTasks = BatTask.getBatTasks();
+		final ArrayList<BatTask> batTasksCopy = new ArrayList<>(batTasks);
+		for (BatTask batTask : batTasksCopy) {
+			batTask.tryCancel();
+		}
+		batTasks.clear();
 		try {
 			updater.stop();
 		} catch (Exception ex) {
@@ -179,6 +199,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		cfg.set(BATS_PATH, bats);
 		cfg.set(TOGGLE_DEFAULT_PATH, toggleDefault);
 		cfg.set(PLAY_SOUND_PATH, playSound);
+//		cfg.set(SCARY_PATH, scary);
+		cfg.set(SOUND_PATH, sound);
 		saveConfig();
 	}
 
@@ -192,6 +214,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		readBats();
 		readToggleDefault();
 		readPlaySound();
+//		readScary();
+		readSound();
 		updater.notifyUpdate();
 	}
 
@@ -284,6 +308,25 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		playSound = getConfig().getBoolean(PLAY_SOUND_PATH);
 	}
 
+	private void readScary() {
+//		scary = getConfig().getBoolean(SCARY_PATH);
+	}
+
+	private void readSound() {
+		String sound = getConfig().getString(SOUND_PATH);
+		if (sound == null) {
+			getLogger().severe("No sound configured!");
+		}
+		try {
+			Sound.valueOf(sound);
+			this.sound = sound;
+		} catch (IllegalArgumentException ex) {
+			getLogger().severe("Could not find configured sound " + sound);
+			getLogger().severe("Setting sound now to " + this.sound);
+		}
+	}
+
+	@SuppressWarnings("SameParameterValue")
 	private <T extends CommandExecutor & TabCompleter> void setTabExecutor(String command, T handler) {
 		PluginCommand cmd = getCommand(command);
 		cmd.setExecutor(handler);

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import org.bukkit.Color;
@@ -15,25 +15,40 @@ import org.bukkit.entity.Bat;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-@RequiredArgsConstructor
 public class BatTask extends BukkitRunnable {
 
 	private static final int SOUND_DISTANCE_SQUARED = 10 * 10;
+	private static final List<BatTask> BAT_TASKS = new ArrayList<>();
+
+	private static boolean exb1;
+	private static boolean exb2;
+	private static boolean exb3;
+
 	private final Random random = new Random();
 	private final FlickeringPumpkinsLite plugin;
 	private final Location pumpkinLocation;
 	private List<Bat> bats;
 	private int count;
 
+	public static List<BatTask> getBatTasks() {
+		return BAT_TASKS;
+	}
+
+	public BatTask(FlickeringPumpkinsLite plugin, Location pumpkinLocation) {
+		this.plugin = plugin;
+		this.pumpkinLocation = pumpkinLocation;
+		BAT_TASKS.add(this);
+	}
+
 	@Override
 	public void run() {
 		if (count > 20) {
-			if (bats != null) {
+			/*if (bats != null) {
 				for (Bat bat : bats) {
 					bat.setNoDamageTicks(0);
 					bat.remove();
 				}
-			}
+			}*/
 			tryCancel();
 			return;
 		}
@@ -49,7 +64,7 @@ public class BatTask extends BukkitRunnable {
 				bats.add(bat);
 			}
 			if (random.nextInt(4) == 0) { //chance 25% to play sound, 75% of bat spawns, no sound is played
-				playScarySound(pumpkinLocation); //only once, not per bat
+				playScarySoundWings(pumpkinLocation); //only once, not per bat
 			}
 			return;
 		}
@@ -84,33 +99,66 @@ public class BatTask extends BukkitRunnable {
 		}
 	}
 
-	private void playScarySound(Location loc) {
-		playScarySound(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SOUND_DISTANCE_SQUARED));
+	private void playScarySoundWings(Location loc) {
+		playScarySoundWings(loc, FlickeringPumpkinsLiteUpdater.getNearbyPlayers(loc, SOUND_DISTANCE_SQUARED));
 	}
 
-	private void playScarySound(Location loc, List<Player> players) {
+	private void playScarySoundWings(Location loc, List<Player> players) {
 		if (plugin.isPlaySound()) {
 			for (Player plr : players) {
-				plr.playSound(loc, getScarySound(), 1 + random.nextFloat() * .5F, 0); //floats: volume - pitch
+				final Sound sound = getScarySoundWings();
+				if (sound != null) {
+					plr.playSound(loc, sound, 1, 0); //floats: volume - pitch
+				}
 			}
 		}
 	}
 
-	private void tryCancel() {
+	public void tryCancel() {
+		if (bats != null) {
+			for (Bat bat : bats) {
+				bat.setNoDamageTicks(0);
+				bat.remove();
+			}
+			bats.clear();
+		}
 		try {
 			cancel();
+			BAT_TASKS.remove(this);
 		} catch (IllegalStateException ex) {
 			System.out.println("[FlickeringPumpkinsLite] Could not cancel bat task!");
 			ex.printStackTrace();
 		}
 	}
 
+	@Nullable
 	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
-	private static Sound getScarySound() {
+	private Sound getScarySoundWings() {
 		try {
-			return Sound.ENDERDRAGON_WINGS;
-		} catch (NoSuchFieldError ex) {}
-
-		return (Sound) Sound.class.getField("ENTITY_ENDERDRAGON_FLAP").get(null);
+			final String sound = plugin.getSound();
+			return Sound.valueOf(sound);
+		} catch (NullPointerException | IllegalArgumentException ex) {
+			if (!exb1) {
+				exb1 = true;
+				new IllegalArgumentException("Configured sound " + plugin.getSound() + " could not be found, trying defaults now", ex).printStackTrace();
+			}
+			try {
+				return Sound.ENDERDRAGON_WINGS;
+			} catch (NoSuchFieldError ex2) {
+				if (!exb2) {
+					exb2 = true;
+					new Exception("Couldn't find sound ENDERDRAGON_WINGS, trying ENTITY_ENDERDRAGON_FLAP", ex2).printStackTrace();
+				}
+				try {
+					return Sound.valueOf("ENTITY_ENDERDRAGON_FLAP");
+				} catch (IllegalArgumentException ex3) {
+					if (!exb3) {
+						exb3 = true;
+						new Exception("Couldn't find sound ENTITY_ENDERDRAGON_FLAP, giving up...", ex3).printStackTrace();
+					}
+					return null;
+				}
+			}
+		}
 	}
 }
