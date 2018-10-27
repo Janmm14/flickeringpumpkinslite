@@ -34,6 +34,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final int INTERVAL_DEFAULT = 5;
 	private static final int ON_PROBABILITY_DEFAULT = 5;
 	private static final int OFF_PROBABILITY_DEFAULT = 50;
+	private static final int SOUND_PROBABILITY_DEFAULT = 35;
 	private static final boolean BATS_DEFAULT = true;
 	private static final boolean TOGGLE_DEFAULT_DEFAULT = false;
 	private static final boolean PLAY_SOUND_DEFAULT = true;
@@ -43,6 +44,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	private static final String INTERVAL_PATH = "interval";
 	private static final String ON_PROBABILITY_PATH = "probability-on";
 	private static final String OFF_PROBABILITY_PATH = "probability-off";
+	private static final String SOUND_PROBABILITY_PATH = "sound-probability";
 	private static final String BATS_PATH = "spawn-bats";
 	private static final String TOGGLE_DEFAULT_PATH = "toggle-default";
 	private static final String PLAY_SOUND_PATH = "play-sound";
@@ -69,6 +71,9 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	@Getter
 	@Setter
 	private int offProbability = OFF_PROBABILITY_DEFAULT;
+	@Getter
+	@Setter
+	private int soundProbability = SOUND_PROBABILITY_DEFAULT;
 	@Getter
 	@Setter
 	private boolean bats = BATS_DEFAULT;
@@ -118,6 +123,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		cfg.addDefault(INTERVAL_PATH, INTERVAL_DEFAULT);
 		cfg.addDefault(ON_PROBABILITY_PATH, ON_PROBABILITY_DEFAULT);
 		cfg.addDefault(OFF_PROBABILITY_PATH, OFF_PROBABILITY_DEFAULT);
+		cfg.addDefault(SOUND_PROBABILITY_PATH, SOUND_PROBABILITY_DEFAULT);
 		cfg.addDefault(BATS_PATH, BATS_DEFAULT);
 		cfg.addDefault(TOGGLE_DEFAULT_PATH, TOGGLE_DEFAULT_DEFAULT);
 		cfg.addDefault(PLAY_SOUND_PATH, PLAY_SOUND_DEFAULT);
@@ -204,6 +210,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		cfg.set(INTERVAL_PATH, interval);
 		cfg.set(ON_PROBABILITY_PATH, onProbability);
 		cfg.set(OFF_PROBABILITY_PATH, offProbability);
+		cfg.set(SOUND_PROBABILITY_PATH, soundProbability);
 		cfg.set(BATS_PATH, bats);
 		cfg.set(TOGGLE_DEFAULT_PATH, toggleDefault);
 		cfg.set(PLAY_SOUND_PATH, playSound);
@@ -254,6 +261,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 	public void readProbability() {
 		readProbabilityOn();
 		readProbabilityOff();
+		readSoundProbability();
 	}
 
 	private void readProbabilityOn() {
@@ -302,6 +310,30 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 			return;
 		}
 		this.offProbability = probability;
+	}
+
+	private void readSoundProbability() {
+		int probability = getConfig().getInt(SOUND_PROBABILITY_PATH, Integer.MIN_VALUE);
+		if (probability == Integer.MIN_VALUE) {
+			String probStrOrigin = getConfig().getString(SOUND_PROBABILITY_PATH);
+			if (probStrOrigin == null || probStrOrigin.isEmpty()) {
+				return;
+			}
+			String probStr = NO_NUMBER.matcher(probStrOrigin.trim()).replaceAll("");
+			try {
+				probability = Integer.parseInt(probStr);
+			} catch (NumberFormatException ex) {
+				getLogger().severe("Could not read sound-probability value, it was: " + probStrOrigin);
+				getLogger().severe("Setting sound-probability now to " + this.offProbability);
+				return;
+			}
+		}
+		if (probability < 0) {
+			getLogger().severe("Sound-probability value may not be negative.");
+			getLogger().severe("Setting sound-probability now to " + this.offProbability);
+			return;
+		}
+		this.soundProbability = probability;
 	}
 
 	public void readBats() {

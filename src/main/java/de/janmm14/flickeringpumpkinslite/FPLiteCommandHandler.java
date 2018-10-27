@@ -25,7 +25,7 @@ import de.janmm14.flickeringpumpkinslite.pumpkinconfig.PumpkinConfiguration;
 public class FPLiteCommandHandler implements TabExecutor {
 
 	private static final List<String> SUBCOMMAND_LIST = ImmutableList.of("get", "toggle", "reload", "options", "import", "list-sounds");
-	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "spawn-bats", "toggle-default", "play-sound"/*, "scary"*/, "sound");
+	private static final List<String> OPTIONS_OPTIONS = ImmutableList.of("interval", "probability-on", "probability-off", "sound-probability", "spawn-bats", "toggle-default", "play-sound"/*, "scary"*/, "sound");
 	private static final List<String> TRUE_AND_FALSE = ImmutableList.of("true", "false");
 	private static final List<String> SOUNDS;
 	private static final Joiner COMMA_JOINER = Joiner.on("§7, §e");
@@ -125,6 +125,11 @@ public class FPLiteCommandHandler implements TabExecutor {
 						case "probabilityoff":
 						case "probability-off": {
 							sender.sendMessage("§6Value of the option§e probability-off §6is: §e" + plugin.getOffProbability());
+							break;
+						}
+						case "soundprobability":
+						case "sound-probability": {
+							sender.sendMessage("§6Value of the option§e sound-probability §6is: §e" + plugin.getSoundProbability());
 							break;
 						}
 						case "spawnbats":
@@ -229,7 +234,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 					case "probabilityon":
 					case "probability-on": {
 						if (val > 100) {
-							sender.sendMessage("§cProbability too high. Needs to be between §60 §cand §6100§c.");
+							sender.sendMessage("§cProbability too high. Needs to be between§6 0 §cand§6 100§c.");
 						}
 						plugin.setOnProbability(val);
 						plugin.saveConfigChanges();
@@ -239,11 +244,21 @@ public class FPLiteCommandHandler implements TabExecutor {
 					case "probabilityoff":
 					case "probability-off": {
 						if (val > 100) {
-							sender.sendMessage("§cProbability too high. Needs to be between §60 §cand §6100§c.");
+							sender.sendMessage("§cProbability too high. Needs to be between§6 0 §cand§6 100§c.");
 						}
 						plugin.setOffProbability(val);
 						plugin.saveConfigChanges();
 						sender.sendMessage("§6Value of the option§e probability-off §6is now: §e" + plugin.getOffProbability());
+						break;
+					}
+					case "soundprobability":
+					case "sound-probability": {
+						if (val > 100) {
+							sender.sendMessage("§cProbability too high. Needs to be between§6 0 §cand§6 100§c.");
+						}
+						plugin.setSoundProbability(val);
+						plugin.saveConfigChanges();
+						sender.sendMessage("§6Value of the option§e sound-probability §6is now: §e" + plugin.getSoundProbability());
 						break;
 					}
 					default: {

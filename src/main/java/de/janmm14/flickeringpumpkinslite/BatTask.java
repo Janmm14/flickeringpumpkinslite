@@ -57,8 +57,8 @@ public class BatTask extends BukkitRunnable {
 				bat.setAwake(true);
 				bats.add(bat);
 			}
-			if (random.nextInt(4) < 2) { //chance 50% to play sound
-				playScarySoundWings(pumpkinLocation); //only once, not per bat
+			if (random.nextInt(100) < plugin.getSoundProbability()) {
+				playScarySoundWings(pumpkinLocation);
 			}
 			return;
 		}
