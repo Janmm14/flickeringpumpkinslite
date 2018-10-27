@@ -6,7 +6,7 @@
 
     <groupId>de.janmm14</groupId>
     <artifactId>flickeringpumpkinslite</artifactId>
-    <version>1.2</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <name>FlickeringPumpkinsLite</name>
     <description>Makes specific pumpkins flicker around</description>
