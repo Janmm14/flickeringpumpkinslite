@@ -270,6 +270,7 @@ public class FPLiteCommandHandler implements TabExecutor {
 				}
 				if (!plugin.getFlickeringPumpkinsJsonFile().exists()) {
 					sender.sendMessage("§cFile not found: plugins/FlickeringPumpkins/pumpkins.json");
+					return true;
 				}
 				PumpkinConfiguration pumpkinConfig = plugin.getPumpkinConfiguration();
 				JsonPumpkinConfiguration jsonConfig = new JsonPumpkinConfiguration(plugin.getFlickeringPumpkinsJsonFile());
