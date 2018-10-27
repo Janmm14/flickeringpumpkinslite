@@ -95,6 +95,8 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		FlickeringPumpkinsLiteUpdater.class.getName();
 		PumpkinConfiguration.class.getName();
 
+		setPumpkinItem();
+
 		setTabExecutor("flickeringpumpkinslite", new FPLiteCommandHandler(this));
 		getServer().getPluginManager().registerEvents(new PumpkinBlockListener(this), this);
 		updater = new FlickeringPumpkinsLiteUpdater(this);
@@ -124,7 +126,6 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		saveConfig();
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
-		setPumpkinItem();
 		updater.start();
 	}
 

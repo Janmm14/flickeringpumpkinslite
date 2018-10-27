@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 @RequiredArgsConstructor
 public class PumpkinBlockListener implements Listener {
@@ -21,7 +22,13 @@ public class PumpkinBlockListener implements Listener {
 		if (event.isCancelled() || !event.canBuild()) { //TODO find out more about canBuild() method and behaviour
 			return;
 		}
-		if (plugin.getPumpkinItem().isSimilar(event.getItemInHand())) {
+		final ItemStack pumpkinItem = plugin.getPumpkinItem();
+		final ItemStack itemInHand = event.getItemInHand();
+		if (pumpkinItem == null) {
+			plugin.getLogger().severe("Pumpkin comparision item is null / not initialized.");
+			return;
+		}
+		if (itemInHand != null && pumpkinItem.isSimilar(itemInHand)) {
 			setAsPumpkinLocation(event.getBlockPlaced());
 		} else if (event.getPlayer().hasPermission("flickeringpumpkinslite.allowtoggle") &&
 			xor(plugin.isToggleDefault(), plugin.getSpecialPumpkinCreators().contains(event.getPlayer().getUniqueId()))) {
