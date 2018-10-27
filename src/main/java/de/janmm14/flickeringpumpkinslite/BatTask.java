@@ -43,12 +43,6 @@ public class BatTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		if (count > 20) {
-			/*if (bats != null) {
-				for (Bat bat : bats) {
-					bat.setNoDamageTicks(0);
-					bat.remove();
-				}
-			}*/
 			tryCancel();
 			return;
 		}
