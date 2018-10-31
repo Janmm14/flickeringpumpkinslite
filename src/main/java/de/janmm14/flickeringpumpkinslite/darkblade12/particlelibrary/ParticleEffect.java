@@ -1295,5 +1295,4 @@ public enum ParticleEffect {
 			super(message);
 		}
 	}
-
 }
