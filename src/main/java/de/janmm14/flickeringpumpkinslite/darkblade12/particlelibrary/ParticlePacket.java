@@ -6,9 +6,20 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedParticle;
+
+import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.packetwrapper.WrapperParticle_1_12;
+import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.packetwrapper.WrapperParticle_1_13;
+import de.janmm14.flickeringpumpkinslite.darkblade12.particlelibrary.packetwrapper.WrapperParticle_old;
 
 /**
  * Represents a particle effect packet with all attributes which is used for sending packets to the players
@@ -20,7 +31,7 @@ import org.bukkit.util.Vector;
  */
 public final class ParticlePacket {
 	private static int version;
-	private static Class<?> enumParticle;
+		private static Class<?> enumParticle;
 	private static Constructor<?> packetConstructor;
 	private static Method getHandle;
 	private static Field playerConnection;
@@ -33,8 +44,9 @@ public final class ParticlePacket {
 	private final float speed;
 	private final int amount;
 	private final boolean longDistance;
-	private final ParticleEffect.ParticleData data;
+	private final ParticleData data;
 	private Object packet;
+	private PacketContainer protocolLibPacket;
 
 	/**
 	 * Construct a new particle packet
@@ -50,7 +62,7 @@ public final class ParticlePacket {
 	 * @throws IllegalArgumentException If the speed or amount is lower than 0
 	 * @see #initialize()
 	 */
-	public ParticlePacket(ParticleEffect effect, float offsetX, float offsetY, float offsetZ, float speed, int amount, boolean longDistance, ParticleEffect.ParticleData data) throws IllegalArgumentException {
+	public ParticlePacket(ParticleEffect effect, float offsetX, float offsetY, float offsetZ, float speed, int amount, boolean longDistance, ParticleData data) throws IllegalArgumentException {
 		initialize();
 		if (speed < 0) {
 			throw new IllegalArgumentException("The speed is lower than 0");
@@ -77,9 +89,9 @@ public final class ParticlePacket {
 	 * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
 	 * @param data Data of the effect
 	 * @throws IllegalArgumentException If the speed is lower than 0
-	 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleEffect.ParticleData)
+	 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
 	 */
-	public ParticlePacket(ParticleEffect effect, Vector direction, float speed, boolean longDistance, ParticleEffect.ParticleData data) throws IllegalArgumentException {
+	public ParticlePacket(ParticleEffect effect, Vector direction, float speed, boolean longDistance, ParticleData data) throws IllegalArgumentException {
 		this(effect, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ(), speed, 0, longDistance, data);
 	}
 
@@ -89,7 +101,7 @@ public final class ParticlePacket {
 	 * @param effect Particle effect
 	 * @param color Color of the particle
 	 * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
-	 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleEffect.ParticleData)
+	 * @see #ParticlePacket(ParticleEffect, float, float, float, float, int, boolean, ParticleData)
 	 */
 	public ParticlePacket(ParticleEffect effect, ParticleEffect.ParticleColor color, boolean longDistance) {
 		this(effect, color.getValueX(), color.getValueY(), color.getValueZ(), 1, 0, longDistance, null);
@@ -107,6 +119,9 @@ public final class ParticlePacket {
 	 */
 	public static void initialize() throws VersionIncompatibleException {
 		if (initialized) {
+			return;
+		}
+		if (version >= 13) {
 			return;
 		}
 		try {
@@ -154,35 +169,57 @@ public final class ParticlePacket {
 	 * @throws PacketInstantiationException If instantion fails due to an unknown error
 	 */
 	private void initializePacket(Location center) throws PacketInstantiationException {
-		if (packet != null) {
-			return;
-		}
-		try {
-			packet = packetConstructor.newInstance();
-			if (version < 8) {
-				String name = effect.getName();
-				if (data != null) {
-					name += data.getPacketDataString();
-				}
-				ReflectionUtils.setValue(packet, true, "a", name);
-			} else {
-				ReflectionUtils.setValue(packet, true, "a", enumParticle.getEnumConstants()[effect.getId()]);
-				ReflectionUtils.setValue(packet, true, "j", longDistance);
-				if (data != null) {
-					int[] packetData = data.getPacketData();
-					ReflectionUtils.setValue(packet, true, "k", effect == ParticleEffect.ITEM_CRACK ? packetData : new int[]{packetData[0] | (packetData[1] << 12)});
+		if (version >= 13) {
+			WrapperParticle_1_13 packet = new WrapperParticle_1_13();
+			Object pData = null;
+			switch (effect) {
+				case REDSTONE: {
+					pData = new Particle.DustOptions(Color.fromRGB((int) (offsetX * 255), (int) (offsetY * 255), (int) (offsetZ * 255)), 1);
+					break;
 				}
 			}
-			ReflectionUtils.setValue(packet, true, "b", (float) center.getX());
-			ReflectionUtils.setValue(packet, true, "c", (float) center.getY());
-			ReflectionUtils.setValue(packet, true, "d", (float) center.getZ());
-			ReflectionUtils.setValue(packet, true, "e", offsetX);
-			ReflectionUtils.setValue(packet, true, "f", offsetY);
-			ReflectionUtils.setValue(packet, true, "g", offsetZ);
-			ReflectionUtils.setValue(packet, true, "h", speed);
-			ReflectionUtils.setValue(packet, true, "i", amount);
-		} catch (Exception exception) {
-			throw new PacketInstantiationException("Packet instantiation failed", exception);
+			packet.setParticleType(WrappedParticle.create(org.bukkit.Particle.valueOf(effect.name()), pData));
+			packet.setLongDistance(longDistance);
+			packet.setX((float) center.getX());
+			packet.setY((float) center.getY());
+			packet.setZ((float) center.getZ());
+			packet.setOffsetX(offsetX);
+			packet.setOffsetY(offsetY);
+			packet.setOffsetZ(offsetZ);
+			packet.setParticleData(speed);
+			packet.setNumberOfParticles(amount);
+			protocolLibPacket = packet.getHandle();
+		} else {
+			if (packet != null) {
+				return;
+			}
+			try {
+				packet = packetConstructor.newInstance();
+				if (version < 8) {
+					String name = effect.getName();
+					if (data != null) {
+						name += data.getPacketDataString();
+					}
+					ReflectionUtils.setValue(packet, true, "a", name);
+				} else {
+					ReflectionUtils.setValue(packet, true, "a", enumParticle.getEnumConstants()[effect.getId()]);
+					ReflectionUtils.setValue(packet, true, "j", longDistance);
+					if (data != null) {
+						int[] packetData = data.getPacketData();
+						ReflectionUtils.setValue(packet, true, "k", effect == ParticleEffect.ITEM_CRACK ? packetData : new int[]{packetData[0] | (packetData[1] << 12)});
+					}
+				}
+				ReflectionUtils.setValue(packet, true, "b", (float) center.getX());
+				ReflectionUtils.setValue(packet, true, "c", (float) center.getY());
+				ReflectionUtils.setValue(packet, true, "d", (float) center.getZ());
+				ReflectionUtils.setValue(packet, true, "e", offsetX);
+				ReflectionUtils.setValue(packet, true, "f", offsetY);
+				ReflectionUtils.setValue(packet, true, "g", offsetZ);
+				ReflectionUtils.setValue(packet, true, "h", speed);
+				ReflectionUtils.setValue(packet, true, "i", amount);
+			} catch (Exception exception) {
+				throw new PacketInstantiationException("Packet instantiation failed", exception);
+			}
 		}
 	}
 
@@ -198,7 +235,8 @@ public final class ParticlePacket {
 	public void sendTo(Location center, Player player) throws PacketInstantiationException, PacketSendingException {
 		initializePacket(center);
 		try {
-			sendPacket.invoke(playerConnection.get(getHandle.invoke(player)), packet);
+//			sendPacket.invoke(playerConnection.get(getHandle.invoke(player)), packet);
+			ProtocolLibrary.getProtocolManager().sendServerPacket(player, protocolLibPacket);
 		} catch (Exception exception) {
 			throw new PacketSendingException("Failed to send the packet to player '" + player.getName() + "'", exception);
 		}
