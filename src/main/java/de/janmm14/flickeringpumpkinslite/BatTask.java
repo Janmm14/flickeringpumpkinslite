@@ -23,6 +23,7 @@ public class BatTask extends BukkitRunnable {
 	private static boolean exb1;
 	private static boolean exb2;
 	private static boolean exb3;
+	private static boolean exb4;
 
 	private final Random random = new Random();
 	private final FlickeringPumpkinsLite plugin;
@@ -134,23 +135,31 @@ public class BatTask extends BukkitRunnable {
 		} catch (NullPointerException | IllegalArgumentException ex) {
 			if (!exb1) {
 				exb1 = true;
-				new IllegalArgumentException("Configured sound " + plugin.getSound() + " could not be found, trying defaults now", ex).printStackTrace();
+				new IllegalArgumentException("Configured sound " + plugin.getSound() + " could not be found, trying defaults now (this exception will only be shown once)", ex).printStackTrace();
 			}
 			try {
-				return Sound.ENDERDRAGON_WINGS;
-			} catch (NoSuchFieldError ex2) {
+				return Sound.valueOf("ENDERDRAGON_WINGS");
+			} catch (IllegalArgumentException ex2) {
 				if (!exb2) {
 					exb2 = true;
-					new Exception("Couldn't find sound ENDERDRAGON_WINGS, trying ENTITY_ENDERDRAGON_FLAP", ex2).printStackTrace();
+					new Exception("Couldn't find sound ENDERDRAGON_WINGS, trying ENTITY_ENDERDRAGON_FLAP (this exception will only be shown once)", ex2).printStackTrace();
 				}
 				try {
 					return Sound.valueOf("ENTITY_ENDERDRAGON_FLAP");
 				} catch (IllegalArgumentException ex3) {
 					if (!exb3) {
 						exb3 = true;
-						new Exception("Couldn't find sound ENTITY_ENDERDRAGON_FLAP, giving up...", ex3).printStackTrace();
+						new Exception("Couldn't find sound ENTITY_ENDERDRAGON_FLAP, giving up... (this exception will only be shown once)", ex3).printStackTrace();
 					}
-					return null;
+					try {
+						return Sound.valueOf("ENTITY_ENDER_DRAGON_FLAP");
+					} catch (IllegalArgumentException ex4) {
+						if (!exb4) {
+							exb4 = true;
+							new Exception("Couldn't find sound ENTITY_ENDER_DRAGON_FLAP, giving up... (this exception will only be shown once)", ex4).printStackTrace();
+						}
+						return null;
+					}
 				}
 			}
 		}

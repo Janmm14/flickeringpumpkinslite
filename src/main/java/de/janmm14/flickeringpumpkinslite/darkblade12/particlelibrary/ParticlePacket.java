@@ -121,11 +121,11 @@ public final class ParticlePacket {
 		if (initialized) {
 			return;
 		}
-		if (version >= 13) {
-			return;
-		}
 		try {
 			version = ReflectionUtils.PackageType.getServerVersionSecondInt();
+			if (version >= 13) {
+				return;
+			}
 			if (version > 7) {
 				enumParticle = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("EnumParticle");
 			}

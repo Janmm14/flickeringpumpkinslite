@@ -6,7 +6,7 @@
 
     <groupId>de.janmm14</groupId>
     <artifactId>flickeringpumpkinslite</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
 
     <name>FlickeringPumpkinsLite</name>
     <description>Makes specific pumpkins flicker around</description>
@@ -56,7 +56,7 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.name}</finalName>
 
         <resources>
             <resource>
