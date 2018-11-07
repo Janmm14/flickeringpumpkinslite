@@ -133,6 +133,7 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		reload(true);
 		checkFlickeringPumpkinsPlugin();
 		updater.start();
+		saveConfigChanges();
 	}
 
 	private void setPumpkinItem() {
@@ -202,7 +203,6 @@ public class FlickeringPumpkinsLite extends JavaPlugin {
 		specialPumpkinCreators.clear();
 		pumpkinConfiguration.save();
 		pumpkinConfiguration = null;
-		saveConfigChanges();
 	}
 
 	public void saveConfigChanges() {
