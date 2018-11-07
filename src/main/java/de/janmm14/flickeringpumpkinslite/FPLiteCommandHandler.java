@@ -196,14 +196,15 @@ public class FPLiteCommandHandler implements TabExecutor {
 //						return true;
 //					}
 					case "sound": {
+						final String soundName = args[2].toUpperCase(Locale.ENGLISH);
 						try {
-							Sound.valueOf(args[2]);
+							Sound.valueOf(soundName);
 
-							plugin.setSound(args[2]);
+							plugin.setSound(soundName);
 							plugin.saveConfigChanges();
 							sender.sendMessage("§6Value of the option§e sound §6is now: §e" + plugin.getSound());
 						} catch (IllegalArgumentException ex) {
-							sender.sendMessage("§cNo sound with the name §6" + plugin.getSound() + "§c found, option not changed.");
+							sender.sendMessage("§cNo sound with the name §6" + soundName + "§c found, option not changed.");
 							sender.sendMessage("§6You can list all available sounds with §e/" + alias + " list-sounds");
 						}
 						return true;
